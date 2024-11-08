@@ -126,7 +126,7 @@ const DEFAULT_ACCESS_STATE = {
   defaultModel: "",
 
   // tts config
-  edgeTTSVoiceName: "zh-CN-YunxiNeural",
+  edgeTTSVoiceName: "zh-CN-XiaoxiaoNeural",
 };
 
 export const useAccessStore = createPersistStore(

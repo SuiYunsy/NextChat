@@ -20,14 +20,14 @@ import SpeakStopIcon from "../icons/speak-stop.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import LoadingButtonIcon from "../icons/loading.svg";
 import PromptIcon from "../icons/prompt.svg";
-import MaskIcon from "../icons/mask.svg";
+// import MaskIcon from "../icons/mask.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
 import BreakIcon from "../icons/break.svg";
 import SettingsIcon from "../icons/chat-settings.svg";
 import DeleteIcon from "../icons/clear.svg";
-import PinIcon from "../icons/pin.svg";
+// import PinIcon from "../icons/pin.svg";
 import EditIcon from "../icons/rename.svg";
 import ConfirmIcon from "../icons/confirm.svg";
 import CloseIcon from "../icons/close.svg";
@@ -44,7 +44,7 @@ import SizeIcon from "../icons/size.svg";
 import QualityIcon from "../icons/hd.svg";
 import StyleIcon from "../icons/palette.svg";
 import PluginIcon from "../icons/plugin.svg";
-import ShortcutkeyIcon from "../icons/shortcutkey.svg";
+// import ShortcutkeyIcon from "../icons/shortcutkey.svg";
 import ReloadIcon from "../icons/reload.svg";
 
 import {
@@ -98,7 +98,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import {
   CHAT_PAGE_SIZE,
-  DEFAULT_TTS_ENGINE,
+  // DEFAULT_TTS_ENGINE,
   ModelProvider,
   Path,
   REQUEST_TIMEOUT_MS,
@@ -373,16 +373,21 @@ function ClearContextDivider() {
 export function ChatAction(props: {
   text: string;
   icon: JSX.Element;
+  alwaysShowText?: boolean;
   onClick: () => void;
 }) {
+  const isMobileScreen = useMobileScreen();
+  const shouldAlwaysShowText = !isMobileScreen && props.alwaysShowText;
+
   const iconRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState({
     full: 16,
     icon: 16,
   });
+  const { text, icon } = props;
 
-  function updateWidth() {
+  const updateWidth = useCallback(() => {
     if (!iconRef.current || !textRef.current) return;
     const getWidth = (dom: HTMLDivElement) => dom.getBoundingClientRect().width;
     const textWidth = getWidth(textRef.current);
@@ -391,17 +396,25 @@ export function ChatAction(props: {
       full: textWidth + iconWidth,
       icon: iconWidth,
     });
-  }
+  }, []);
+
+  useEffect(() => {
+    updateWidth();
+  }, [shouldAlwaysShowText, text, icon, updateWidth]);
 
   return (
     <div
-      className={clsx(styles["chat-input-action"], "clickable")}
+      className={clsx(
+        styles["chat-input-action"], 
+        "clickable", 
+        { [styles["always-show-text"]]: shouldAlwaysShowText }
+      )}
       onClick={() => {
         props.onClick();
         setTimeout(updateWidth, 1);
       }}
-      onMouseEnter={updateWidth}
-      onTouchStart={updateWidth}
+      onMouseEnter={!shouldAlwaysShowText ? updateWidth : undefined}
+      onTouchStart={!shouldAlwaysShowText ? updateWidth : undefined}
       style={
         {
           "--icon-width": `${width.icon}px`,
@@ -412,7 +425,15 @@ export function ChatAction(props: {
       <div ref={iconRef} className={styles["icon"]}>
         {props.icon}
       </div>
-      <div className={styles["text"]} ref={textRef}>
+      <div
+        className={styles["text"]}
+        ref={textRef}
+        style={
+          shouldAlwaysShowText
+            ? { opacity: 1, transform: "translate(0)", pointerEvents: "auto" }
+            : {}
+        }
+      >
         {props.text}
       </div>
     </div>
@@ -462,6 +483,7 @@ export function ChatActions(props: {
   uploading: boolean;
   setShowShortcutKeyModal: React.Dispatch<React.SetStateAction<boolean>>;
   setUserInput: (input: string) => void;
+  // setHitBottom: (hitBottom: boolean) => void; // 新增 setHitBottom 方法
 }) {
   const config = useAppConfig();
   const navigate = useNavigate();
@@ -564,7 +586,10 @@ export function ChatActions(props: {
       )}
       {!props.hitBottom && (
         <ChatAction
-          onClick={props.scrollToBottom}
+          onClick={() => {
+            props.scrollToBottom();
+            // props.setHitBottom(true); // 点击后设置 hitBottom 为 true
+          }}
           text={Locale.Chat.InputActions.ToBottom}
           icon={<BottomIcon />}
         />
@@ -577,13 +602,6 @@ export function ChatActions(props: {
         />
       )}
 
-      {showUploadImage && (
-        <ChatAction
-          onClick={props.uploadImage}
-          text={Locale.Chat.InputActions.UploadImage}
-          icon={props.uploading ? <LoadingButtonIcon /> : <ImageIcon />}
-        />
-      )}
       <ChatAction
         onClick={nextTheme}
         text={Locale.Chat.InputActions.Theme[theme]}
@@ -606,18 +624,50 @@ export function ChatActions(props: {
         icon={<PromptIcon />}
       />
 
-      <ChatAction
+      {/* <ChatAction
         onClick={() => {
           navigate(Path.Masks);
         }}
         text={Locale.Chat.InputActions.Masks}
         icon={<MaskIcon />}
-      />
+      /> */}
+
+      {showPlugins(currentProviderName, currentModel) && (
+        <ChatAction
+          onClick={() => {
+            if (pluginStore.getAll().length == 0) {
+              navigate(Path.Plugins);
+            } else {
+              setShowPluginSelector(true);
+            }
+          }}
+          text={Locale.Plugin.Name}
+          icon={<PluginIcon />}
+        />
+      )}
+      {showPluginSelector && (
+        <Selector
+          multiple
+          defaultSelectedValue={chatStore.currentSession().mask?.plugin}
+          items={pluginStore.getAll().map((item) => ({
+            // title: `${item?.title}@${item?.version}`,
+            title: `${item?.title}`,
+            value: item?.id,
+          }))}
+          onClose={() => setShowPluginSelector(false)}
+          onSelection={(s) => {
+            chatStore.updateTargetSession(session, (session) => {
+              session.mask.plugin = s as string[];
+            });
+          }}
+        />
+      )}
 
       <ChatAction
         text={Locale.Chat.InputActions.Clear}
         icon={<BreakIcon />}
         onClick={() => {
+          props.scrollToBottom();
           chatStore.updateTargetSession(session, (session) => {
             if (session.clearContextIndex === session.messages.length) {
               session.clearContextIndex = undefined;
@@ -631,6 +681,7 @@ export function ChatActions(props: {
 
       <ChatAction
         onClick={() => setShowModelSelector(true)}
+        alwaysShowText={true}
         text={currentModelName}
         icon={<RobotIcon />}
       />
@@ -640,7 +691,7 @@ export function ChatActions(props: {
           defaultSelectedValue={`${currentModel}@${currentProviderName}`}
           items={models.map((m) => ({
             title: `${m.displayName}${
-              m?.provider?.providerName
+              m?.provider?.providerName && false
                 ? " (" + m?.provider?.providerName + ")"
                 : ""
             }`,
@@ -669,6 +720,13 @@ export function ChatActions(props: {
         />
       )}
 
+      {showUploadImage && (
+        <ChatAction
+          onClick={props.uploadImage}
+          text={Locale.Chat.InputActions.UploadImage}
+          icon={props.uploading ? <LoadingButtonIcon /> : <ImageIcon />}
+        />
+      )}
       {isDalle3(currentModel) && (
         <ChatAction
           onClick={() => setShowSizeSelector(true)}
@@ -750,43 +808,13 @@ export function ChatActions(props: {
         />
       )}
 
-      {showPlugins(currentProviderName, currentModel) && (
-        <ChatAction
-          onClick={() => {
-            if (pluginStore.getAll().length == 0) {
-              navigate(Path.Plugins);
-            } else {
-              setShowPluginSelector(true);
-            }
-          }}
-          text={Locale.Plugin.Name}
-          icon={<PluginIcon />}
-        />
-      )}
-      {showPluginSelector && (
-        <Selector
-          multiple
-          defaultSelectedValue={chatStore.currentSession().mask?.plugin}
-          items={pluginStore.getAll().map((item) => ({
-            title: `${item?.title}@${item?.version}`,
-            value: item?.id,
-          }))}
-          onClose={() => setShowPluginSelector(false)}
-          onSelection={(s) => {
-            chatStore.updateTargetSession(session, (session) => {
-              session.mask.plugin = s as string[];
-            });
-          }}
-        />
-      )}
-
-      {!isMobileScreen && (
+      {/* {!isMobileScreen && (
         <ChatAction
           onClick={() => props.setShowShortcutKeyModal(true)}
           text={Locale.Chat.ShortcutKey.Title}
           icon={<ShortcutkeyIcon />}
         />
-      )}
+      )} */}
     </div>
   );
 }
@@ -974,7 +1002,7 @@ function _Chat() {
     () => {
       const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
       const inputRows = Math.min(
-        20,
+        14,
         Math.max(2 + Number(!isMobileScreen), rows),
       );
       setInputRows(inputRows);
@@ -1117,7 +1145,7 @@ function _Chat() {
     // copy to clipboard
     if (selectOrCopy(e.currentTarget, getMessageTextContent(message))) {
       if (userInput.length === 0) {
-        setUserInput(getMessageTextContent(message));
+        // setUserInput(getMessageTextContent(message));
       }
 
       e.preventDefault();
@@ -1190,6 +1218,7 @@ function _Chat() {
     const images = getMessageImages(userMessage);
     chatStore.onUserInput(textContent, images).then(() => setIsLoading(false));
     inputRef.current?.focus();
+    scrollToBottom();
   };
 
   const onPinMessage = (message: ChatMessage) => {
@@ -1221,7 +1250,7 @@ function _Chat() {
       let audioBuffer: ArrayBuffer;
       const { markdownToTxt } = require("markdown-to-txt");
       const textContent = markdownToTxt(text);
-      if (config.ttsConfig.engine !== DEFAULT_TTS_ENGINE) {
+      if (config.ttsConfig.engine !== "OpenAI-TTS") {
         const edgeVoiceName = accessStore.edgeVoiceName();
         const tts = new MsEdgeTTS();
         await tts.setMetadata(
@@ -1753,11 +1782,6 @@ function _Chat() {
                         </>
                       )}
                     </div>
-                    {!isUser && (
-                      <div className={styles["chat-model-name"]}>
-                        {message.model}
-                      </div>
-                    )}
 
                     {showActions && (
                       <div className={styles["chat-message-actions"]}>
@@ -1782,11 +1806,11 @@ function _Chat() {
                                 onClick={() => onDelete(message.id ?? i)}
                               />
 
-                              <ChatAction
+                              {/* <ChatAction
                                 text={Locale.Chat.Actions.Pin}
                                 icon={<PinIcon />}
                                 onClick={() => onPinMessage(message)}
-                              />
+                              /> */}
                               <ChatAction
                                 text={Locale.Chat.Actions.Copy}
                                 icon={<CopyIcon />}
@@ -1818,6 +1842,18 @@ function _Chat() {
                             </>
                           )}
                         </div>
+                      </div>
+                    )}
+                    {!isUser && (
+                      <div className={styles["chat-model-name"]}>
+                        {message.model}
+                      </div>
+                    )}
+                    {isUser && (
+                      <div className={styles["chat-message-action-date"]}>
+                        {isContext
+                          ? Locale.Chat.IsContext
+                          : message.date.toLocaleString()}
                       </div>
                     )}
                   </div>
@@ -1856,10 +1892,10 @@ function _Chat() {
                         message.content.length === 0 &&
                         !isUser
                       }
-                      //   onContextMenu={(e) => onRightClick(e, message)} // hard to use
+                      onContextMenu={(e) => onRightClick(e, message)} // 挺好用的哈
                       onDoubleClickCapture={() => {
                         if (!isMobileScreen) return;
-                        setUserInput(getMessageTextContent(message));
+                        // setUserInput(getMessageTextContent(message));
                       }}
                       fontSize={fontSize}
                       fontFamily={fontFamily}
@@ -1898,11 +1934,6 @@ function _Chat() {
                     )}
                   </div>
 
-                  <div className={styles["chat-message-action-date"]}>
-                    {isContext
-                      ? Locale.Chat.IsContext
-                      : message.date.toLocaleString()}
-                  </div>
                 </div>
               </div>
               {shouldShowClearContextDivider && <ClearContextDivider />}
@@ -1935,6 +1966,7 @@ function _Chat() {
           }}
           setShowShortcutKeyModal={setShowShortcutKeyModal}
           setUserInput={setUserInput}
+          // setHitBottom={setHitBottom} // 传递 setHitBottom 函数
         />
         <label
           className={clsx(styles["chat-input-panel-inner"], {
@@ -1951,8 +1983,8 @@ function _Chat() {
             onInput={(e) => onInput(e.currentTarget.value)}
             value={userInput}
             onKeyDown={onInputKeyDown}
-            onFocus={scrollToBottom}
-            onClick={scrollToBottom}
+            // onFocus={scrollToBottom}
+            // onClick={scrollToBottom}
             onPaste={handlePaste}
             rows={inputRows}
             autoFocus={autoFocus}

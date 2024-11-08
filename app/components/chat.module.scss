@@ -2,8 +2,8 @@
 
 .attach-images {
   position: absolute;
-  left: 30px;
-  bottom: 32px;
+  left: 32px;
+  bottom: 16px;
   display: flex;
 }
 
@@ -94,6 +94,17 @@
       justify-content: center;
     }
   }
+  /* 新增样式: 始终显示文本 */
+  .chat-input-action.always-show-text {
+    width: var(--full-width) !important;
+    transition: none; /* 取消过渡效果 */
+  }
+
+  .chat-input-action.always-show-text .text {
+    opacity: 1;
+    transform: translate(0);
+    pointer-events: auto;
+  }
 }
 
 .prompt-toast {
@@ -105,6 +116,7 @@
   width: calc(100% - 40px);
 
   .prompt-toast-inner {
+    display: none !important;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -286,8 +298,7 @@
   flex: 1;
   overflow: auto;
   overflow-x: hidden;
-  padding: 20px;
-  padding-bottom: 40px;
+  padding: 2px 20px 22px;
   position: relative;
   overscroll-behavior: none;
 }
@@ -325,7 +336,7 @@
 }
 
 .chat-message-header {
-  margin-top: 20px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
 
@@ -335,10 +346,10 @@
     font-size: 12px;
     align-items: flex-end;
     justify-content: space-between;
-    transition: all ease 0.3s;
-    transform: scale(0.9) translateY(5px);
+    transition: none;
+    transform: translate(0);
     margin: 0 10px;
-    opacity: 0;
+    opacity: 1;
     pointer-events: none;
 
     .chat-input-actions {
@@ -350,7 +361,14 @@
   .chat-model-name {
     font-size: 12px;
     color: var(--black);
-    margin-left: 6px;
+    margin: 0;
+    white-space: nowrap;
+    text-decoration: underline;
+    opacity: 0.5;
+  }
+
+  .chat-model-name:empty {
+    display: none;
   }
 }
 
@@ -417,7 +435,7 @@
   font-size: 12px;
   color: #aaa;
   line-height: 1.5;
-  margin-top: 5px;
+  margin-top: -2px;
   .chat-message-tool {
     display: flex;
     align-items: end;
@@ -431,7 +449,7 @@
 .chat-message-item {
   box-sizing: border-box;
   max-width: 100%;
-  margin-top: 10px;
+  margin-top: 0px;
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.05);
   padding: 10px;
@@ -503,14 +521,15 @@
 
 .chat-message-action-date {
   font-size: 12px;
-  opacity: 0.2;
+  opacity: 0.5;
   white-space: nowrap;
   transition: all ease 0.6s;
   color: var(--black);
-  text-align: right;
+  text-align: center;
+  text-decoration: underline;
   width: 100%;
   box-sizing: border-box;
-  padding-right: 10px;
+  padding: 0px;
   pointer-events: none;
   z-index: 1;
 }
@@ -526,8 +545,7 @@
 .chat-input-panel {
   position: relative;
   width: 100%;
-  padding: 20px;
-  padding-top: 10px;
+  padding: 10px 20px 10px;
   box-sizing: border-box;
   flex-direction: column;
   border-top: var(--border-in-light);
@@ -619,22 +637,22 @@
   background-color: var(--white);
   color: var(--black);
   font-family: inherit;
-  padding: 10px 90px 10px 14px;
+  padding: 8px 76px 8px 12px;
   resize: none;
   outline: none;
   box-sizing: border-box;
   min-height: 68px;
 }
 
-.chat-input:focus {}
+// .chat-input:focus {}
 
 .chat-input-send {
   background-color: var(--primary);
   color: white;
 
   position: absolute;
-  right: 30px;
-  bottom: 32px;
+  right: 26px;
+  bottom: 16px;
 }
 
 @media only screen and (max-width: 600px) {
@@ -643,7 +661,8 @@
   }
 
   .chat-input-send {
-    bottom: 30px;
+    bottom: 16px;
+    padding: 10px;
   }
 }
 

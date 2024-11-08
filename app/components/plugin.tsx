@@ -198,7 +198,8 @@ export function PluginPage() {
                   <div className={styles["mask-icon"]}></div>
                   <div className={styles["mask-title"]}>
                     <div className={styles["mask-name"]}>
-                      {m.title}@<small>{m.version}</small>
+                      {/* {m.title}@<small>{m.version}</small> */}
+                      {m.title}
                     </div>
                     <div className={clsx(styles["mask-info"], "one-line")}>
                       {Locale.Plugin.Item.Info(

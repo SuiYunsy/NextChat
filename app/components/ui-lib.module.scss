@@ -95,7 +95,7 @@
   border-radius: 12px;
   width: 80vw;
   max-width: 900px;
-  min-width: 300px;
+  min-width: 234px;
   animation: slide-in ease 0.3s;
 
   --modal-padding: 20px;
@@ -315,7 +315,7 @@
   }
 
   &-content {
-    min-width: 300px;
+    min-width: 234px;
     .list {
       max-height: 90vh;
       overflow-x: hidden;

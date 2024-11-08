@@ -3,7 +3,7 @@ import { TTSConfig, TTSConfigValidator } from "../store";
 import Locale from "../locales";
 import { ListItem, Select } from "./ui-lib";
 import {
-  DEFAULT_TTS_ENGINE,
+  // DEFAULT_TTS_ENGINE,
   DEFAULT_TTS_ENGINES,
   DEFAULT_TTS_MODELS,
   DEFAULT_TTS_VOICES,
@@ -63,7 +63,7 @@ export function TTSConfigList(props: {
           ))}
         </Select>
       </ListItem>
-      {props.ttsConfig.engine === DEFAULT_TTS_ENGINE && (
+      {props.ttsConfig.engine === "OpenAI-TTS" && (
         <>
           <ListItem title={Locale.Settings.TTS.Model}>
             <Select

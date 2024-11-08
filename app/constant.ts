@@ -1,4 +1,4 @@
-export const OWNER = "ChatGPTNextWeb";
+export const OWNER = "SuiYunsy";
 export const REPO = "ChatGPT-Next-Web";
 export const REPO_URL = `https://github.com/${OWNER}/${REPO}`;
 export const PLUGINS_REPO_URL = `https://github.com/${OWNER}/NextChat-Awesome-Plugins`;
@@ -89,10 +89,10 @@ export enum StoreKey {
   SdList = "sd-list",
 }
 
-export const DEFAULT_SIDEBAR_WIDTH = 300;
-export const MAX_SIDEBAR_WIDTH = 500;
+export const DEFAULT_SIDEBAR_WIDTH = 280;
+export const MAX_SIDEBAR_WIDTH = 330;
 export const MIN_SIDEBAR_WIDTH = 230;
-export const NARROW_SIDEBAR_WIDTH = 100;
+export const NARROW_SIDEBAR_WIDTH = 90;
 
 export const ACCESS_CODE_PREFIX = "nk-";
 
@@ -245,8 +245,7 @@ export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lan
 // Latex block: $$e=mc^2$$
 // `;
 export const DEFAULT_SYSTEM_TEMPLATE = `
-You are ChatGPT, a large language model trained by {{ServiceProvider}}.
-Knowledge cutoff: {{cutoff}}
+You are a large language model.
 Current model: {{model}}
 Current time: {{time}}
 Latex inline: \\(x^2\\) 
@@ -254,7 +253,7 @@ Latex block: $$e=mc^2$$
 `;
 
 export const SUMMARIZE_MODEL = "gpt-4o-mini";
-export const GEMINI_SUMMARIZE_MODEL = "gemini-pro";
+export const GEMINI_SUMMARIZE_MODEL = "gpt-4o-mini";
 
 export const KnowledgeCutOffDate: Record<string, string> = {
   default: "2021-09",
@@ -276,10 +275,10 @@ export const KnowledgeCutOffDate: Record<string, string> = {
   "gemini-pro-vision": "2023-12",
 };
 
-export const DEFAULT_TTS_ENGINE = "OpenAI-TTS";
+export const DEFAULT_TTS_ENGINE = "Edge-TTS";
 export const DEFAULT_TTS_ENGINES = ["OpenAI-TTS", "Edge-TTS"];
 export const DEFAULT_TTS_MODEL = "tts-1";
-export const DEFAULT_TTS_VOICE = "alloy";
+export const DEFAULT_TTS_VOICE = "onyx";
 export const DEFAULT_TTS_MODELS = ["tts-1", "tts-1-hd"];
 export const DEFAULT_TTS_VOICES = [
   "alloy",
@@ -291,29 +290,15 @@ export const DEFAULT_TTS_VOICES = [
 ];
 
 const openaiModels = [
-  "gpt-3.5-turbo",
-  "gpt-3.5-turbo-1106",
-  "gpt-3.5-turbo-0125",
   "gpt-4",
-  "gpt-4-0613",
-  "gpt-4-32k",
-  "gpt-4-32k-0613",
-  "gpt-4-turbo",
-  "gpt-4-turbo-preview",
   "gpt-4o",
-  "gpt-4o-2024-05-13",
-  "gpt-4o-2024-08-06",
-  "chatgpt-4o-latest",
+  "gpt-4-turbo",
   "gpt-4o-mini",
-  "gpt-4o-mini-2024-07-18",
-  "gpt-4-vision-preview",
-  "gpt-4-turbo-2024-04-09",
-  "gpt-4-1106-preview",
   "dall-e-3",
   "o1-mini",
-  "o1-preview",
 ];
 
+/* 
 const googleModels = [
   "gemini-1.0-pro",
   "gemini-1.5-pro-latest",
@@ -400,6 +385,7 @@ const chatglmModels = [
   "glm-4-flashx",
   "glm-4-flash",
 ];
+*/
 
 let seq = 1000; // 内置的模型序号生成器从1000开始
 export const DEFAULT_MODELS = [
@@ -414,7 +400,7 @@ export const DEFAULT_MODELS = [
       sorted: 1, // 这里是固定的，确保顺序与之前内置的版本一致
     },
   })),
-  ...openaiModels.map((name) => ({
+/*   ...openaiModels.map((name) => ({
     name,
     available: true,
     sorted: seq++,
@@ -534,7 +520,7 @@ export const DEFAULT_MODELS = [
       providerType: "chatglm",
       sorted: 12,
     },
-  })),
+  })), */
 ] as const;
 
 export const CHAT_PAGE_SIZE = 15;

@@ -11,6 +11,7 @@ import DeleteIcon from "../icons/delete.svg";
 import MaskIcon from "../icons/mask.svg";
 import DragIcon from "../icons/drag.svg";
 import DiscoveryIcon from "../icons/discovery.svg";
+import SearchIcon from "../icons/search.svg";
 
 import Locale from "../locales";
 
@@ -30,6 +31,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, Selector } from "./ui-lib";
+import { SearchBar, SearchInputRef } from "./search-bar";
 import clsx from "clsx";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
@@ -224,6 +226,19 @@ export function SideBar(props: { className?: string }) {
   const config = useAppConfig();
   const chatStore = useChatStore();
 
+  // search bar
+  const searchBarRef = useRef<SearchInputRef>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    if (shouldNarrow) stopSearch();
+  }, [shouldNarrow]);
+
+  const stopSearch = () => {
+    setIsSearching(false);
+    searchBarRef.current?.clearInput();
+  };
+
   return (
     <SideBarContainer
       onDragStart={onDragStart}
@@ -231,8 +246,8 @@ export function SideBar(props: { className?: string }) {
       {...props}
     >
       <SideBarHeader
-        title="NextChat"
-        subTitle="Build your own AI assistant."
+        title="GG"
+        subTitle=""
         logo={<ChatGptIcon />}
         shouldNarrow={shouldNarrow}
       >
@@ -257,6 +272,20 @@ export function SideBar(props: { className?: string }) {
             onClick={() => setShowPluginSelector(true)}
             shadow
           />
+          {shouldNarrow && (
+            <IconButton
+              icon={<SearchIcon />}
+              className={styles["sidebar-bar-button"]}
+              onClick={() => {
+                setIsSearching(true);
+                // use setTimeout to avoid the input element not ready
+                setTimeout(() => {
+                  searchBarRef.current?.inputElement?.focus();
+                }, 0);
+              }}
+              shadow
+            />
+          )}
         </div>
         {showPluginSelector && (
           <Selector
@@ -275,15 +304,32 @@ export function SideBar(props: { className?: string }) {
           />
         )}
       </SideBarHeader>
-      <SideBarBody
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            navigate(Path.Home);
-          }
-        }}
+
+      <div
+        className={
+          styles["sidebar-search-bar"] +
+          " " +
+          (isSearching ? styles["sidebar-search-bar-isSearching"] : "")
+        }
       >
-        <ChatList narrow={shouldNarrow} />
-      </SideBarBody>
+        {!shouldNarrow && (
+          <SearchBar ref={searchBarRef} setIsSearching={setIsSearching} />
+        )}
+      </div>
+
+      {!isSearching && (
+        <div
+          className={styles["sidebar-body"]}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              navigate(Path.Home);
+            }
+          }}
+        >
+          <ChatList narrow={shouldNarrow} />
+        </div>
+      )}
+
       <SideBarTail
         primaryAction={
           <>
@@ -328,6 +374,7 @@ export function SideBar(props: { className?: string }) {
               } else {
                 navigate(Path.NewChat);
               }
+              stopSearch();
             }}
             shadow
           />

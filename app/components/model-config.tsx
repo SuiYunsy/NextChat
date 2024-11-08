@@ -96,7 +96,7 @@ export function ModelConfigList(props: {
         <input
           aria-label={Locale.Settings.MaxTokens.Title}
           type="number"
-          min={1024}
+          min={0}
           max={512000}
           value={props.modelConfig.max_tokens}
           onChange={(e) =>
@@ -263,7 +263,8 @@ export function ModelConfigList(props: {
             .filter((v) => v.available)
             .map((v, i) => (
               <option value={`${v.name}@${v.provider?.providerName}`} key={i}>
-                {v.displayName}({v.provider?.providerName})
+                {/* {v.displayName}({v.provider?.providerName}) */}
+                {v.displayName}
               </option>
             ))}
         </Select>

@@ -1,17 +1,34 @@
 [
   {
-    "id": "dalle3",
-    "name": "Dalle3",
-    "schema": "https://ghp.ci/https://raw.githubusercontent.com/ChatGPTNextWeb/NextChat-Awesome-Plugins/main/plugins/dalle/openapi.json"
+    "id": "chatpdf",
+    "name": "chatpdf",
+    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/chatpdf/openapi.json"
   },
   {
-    "id": "arxivsearch",
-    "name": "ArxivSearch",
-    "schema": "https://ghp.ci/https://raw.githubusercontent.com/ChatGPTNextWeb/NextChat-Awesome-Plugins/main/plugins/arxivsearch/openapi.json"
+    "id": "codeinterpreterapi",
+    "name": "codeinterpreterapi",
+    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/codeinterpreterapi/openapi.json"
   },
   {
     "id": "duckduckgolite",
-    "name": "DuckDuckGoLiteSearch",
-    "schema": "https://ghp.ci/https://raw.githubusercontent.com/ChatGPTNextWeb/NextChat-Awesome-Plugins/main/plugins/duckduckgolite/openapi.json"
+    "name": "duckduckgolite",
+    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/duckduckgolite/openapi.json"
+  },
+  {
+    "id": "gapier",
+    "name": "gapier",
+    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/gapier/openapi.json",
+    "authType": "bearer",
+    "authLocation": "header",
+    "authToken": "c6833d45-4434-41d4-82cd-e850157ef121"
+  },
+  {
+    "id": "webpilot",
+    "name": "webpilot",
+    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/webpilot/openapi.yaml",
+    "authType": "custom",
+    "authLocation": "header",
+    "authHeader": "WebPilot-Friend-UID",
+    "authToken": "6dee5600-208b-4c5a-877d-058279a5b93d"
   }
 ]
