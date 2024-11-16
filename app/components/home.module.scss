@@ -50,7 +50,6 @@
   transition: width ease 0.05s;
 
   .sidebar-header-bar {
-    display: none !important;
     display: flex;
     margin-bottom: 20px;
 
@@ -72,6 +71,7 @@
       width: 100%;
       top: 0;
       z-index: 1;
+      background: var(--second);
       .search-icon {
         position: absolute;
         left: 10px;
@@ -263,13 +263,11 @@
   justify-content: space-between;
   align-items: center;
   &-narrow {
-    display: none !important;
     justify-content: center;
   }
 }
 
 .sidebar-logo {
-  display: none !important;
   display: inline-flex;
 }
 
@@ -369,14 +367,12 @@
     display: none;
   }
   .sidebar-logo {
-    display: none !important;
     position: relative;
     display: flex;
     justify-content: center;
   }
 
   .sidebar-header-bar {
-    display: none !important;
     flex-direction: column;
 
     .sidebar-bar-button {

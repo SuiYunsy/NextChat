@@ -18,7 +18,7 @@ import ReloadButtonIcon from "../icons/reload.svg";
 import Locale from "../locales";
 import { Modal, showToast } from "./ui-lib";
 import { copyToClipboard, downloadAs } from "../utils";
-import { Path, ApiPath, REPO_URL } from "@/app/constant";
+import { Path, ApiPath } from "@/app/constant";
 import { Loading } from "./home";
 import styles from "./artifacts.module.scss";
 
@@ -163,7 +163,15 @@ export function ArtifactsShareButton({
         />
       </div>
       {show && (
-        <div className="modal-mask">
+        // <div className="modal-mask">
+        <div
+          className="modal-mask"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              setShow(false);
+            }
+          }}
+        >
           <Modal
             title={Locale.Export.Artifacts.Title}
             onClose={() => setShow(false)}

@@ -331,6 +331,13 @@ export function showConfirm(content: any) {
     div.remove();
   };
 
+  // 添加点击遮罩层关闭模态框的逻辑，使用 mousedown 事件
+  div.onmousedown = (e) => {
+    if (e.target === div) {
+      closeModal();
+    }
+  };
+
   return new Promise<boolean>((resolve) => {
     root.render(
       <Modal
@@ -374,6 +381,7 @@ export function showConfirm(content: any) {
 function PromptInput(props: {
   value: string;
   onChange: (value: string) => void;
+  onConfirm: () => void; // 新增回调函数，用于处理确认逻辑
   rows?: number;
 }) {
   const [input, setInput] = useState(props.value);
@@ -382,12 +390,21 @@ function PromptInput(props: {
     setInput(value);
   };
 
+  // 新增键盘事件处理函数
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      e.preventDefault(); // 阻止默认的换行行为
+      props.onConfirm(); // 调用确认回调函数
+    }
+  };
+
   return (
     <textarea
       className={styles["modal-input"]}
       autoFocus
       value={input}
       onInput={(e) => onInput(e.currentTarget.value)}
+      onKeyDown={handleKeyDown} // 绑定键盘事件
       rows={props.rows ?? 3}
     ></textarea>
   );
@@ -404,8 +421,20 @@ export function showPrompt(content: any, value = "", rows = 3) {
     div.remove();
   };
 
+  // 添加点击遮罩层关闭模态框的逻辑，使用 mousedown 事件
+  div.onmousedown = (e) => {
+    if (e.target === div) {
+      closeModal();
+    }
+  };
+
   return new Promise<string>((resolve) => {
     let userInput = value;
+
+    const handleConfirm = () => {
+      resolve(userInput);
+      closeModal();
+    };
 
     root.render(
       <Modal
@@ -441,6 +470,7 @@ export function showPrompt(content: any, value = "", rows = 3) {
         <PromptInput
           onChange={(val) => (userInput = val)}
           value={value}
+          onConfirm={handleConfirm} // 传递确认回调函数
           rows={rows}
         ></PromptInput>
       </Modal>,

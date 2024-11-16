@@ -65,7 +65,7 @@ export function SearchChatPage() {
     results.sort((a, b) => b.content.length - a.content.length);
 
     return results;
-  }, []);
+  }, [sessions]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {

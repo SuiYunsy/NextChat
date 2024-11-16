@@ -46,6 +46,13 @@ export function AuthPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // 阻止默认行为
+      goChat();
+    }
+  };
+
   return (
     <div className={styles["auth-page"]}>
       {/* <TopBanner></TopBanner> */}
@@ -75,6 +82,7 @@ export function AuthPage() {
             (access) => (access.accessCode = e.currentTarget.value),
           );
         }}
+        onKeyDown={handleKeyDown}
       />
 
       {/* {!accessStore.hideUserApiKey ? (

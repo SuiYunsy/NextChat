@@ -595,7 +595,7 @@ const cn = {
   },
   Store: {
     DefaultTopic: "新的聊天",
-    BotHello: "[**面具**🎭](/#/masks) | [**插件**🧩](/#/plugins) | **[S.D.🎨](/#/sd)** | [**搜索**🔍](/#/search-chat)",
+    BotHello: "[**面具**🎭](/#/masks) | [**插件**🧩](/#/plugins) | **[S.D.🎨](/#/sd)** | [**搜索**🔍](/#/search-chat) | **Ctrl+/**",
     Error: "出错了，稍后重试吧",
     Prompt: {
       History: (content: string) => "这是历史聊天总结作为前情提要：" + content,

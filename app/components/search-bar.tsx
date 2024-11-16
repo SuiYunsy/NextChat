@@ -37,15 +37,19 @@ export interface SearchInputRef {
   inputElement: HTMLInputElement | null;
 }
 
+function escapeRegExp(search: string) {
+  return search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function highlightAndShorten(str: string, search: string) {
   const index = str.toLowerCase().indexOf(search.toLowerCase());
   const head = Math.max(0, index - 10);
   const tail = Math.min(str.length, index + search.length + 40);
   // Remove code block syntax
   let result = str.slice(head, tail);
-
+  const safeSearch = escapeRegExp(search);
   // Use ** to highlight the search result
-  result = result.replace(new RegExp(`(${search})`), "**$1**");
+  result = result.replace(new RegExp(`(${safeSearch})`), "**$1**");
 
   if (head > 0) {
     result = "..." + result;
@@ -65,9 +69,10 @@ function HighlightedMessage({
   message: ChatMessage;
   search: string;
 }) {
+  const messageTextContent = getMessageTextContent(message);
   const highlightedMessage = useMemo(
-    () => highlightAndShorten(getMessageTextContent(message), search),
-    [getMessageTextContent(message), search],
+    () => highlightAndShorten(messageTextContent, search),
+    [messageTextContent, search],
   );
   const ref = useRef<HTMLDivElement>(null);
 
@@ -161,7 +166,7 @@ function SearchBarComponent(
 
   const handleFocus = useCallback(() => {
     if (input && input.trim().length > 0) setIsSearching(true);
-  }, [setIsSearching]);
+  }, [setIsSearching, input]);
 
   const handleBlur = useCallback(() => {
     if (
@@ -206,7 +211,7 @@ function SearchBarComponent(
     }
 
     setResults(newResults);
-  }, [input, sessions]);
+  }, [input, sessions, setIsSearching]);
 
   const displayedResults = useMemo(() => results, [results]);
 

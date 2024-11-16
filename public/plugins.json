@@ -1,23 +1,31 @@
 [
   {
+    "id": "calculator",
+    "name": "calculator",
+    "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/calculator/openapi.json",
+    "authType": "bearer",
+    "authLocation": "header",
+    "authToken": "33ec7c11-c6e4-46c9-812f-2db28c6607ef"
+  },
+  {
     "id": "chatpdf",
     "name": "chatpdf",
-    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/chatpdf/openapi.json"
+    "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/chatpdf/openapi.json"
   },
   {
     "id": "codeinterpreterapi",
     "name": "codeinterpreterapi",
-    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/codeinterpreterapi/openapi.json"
+    "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/codeinterpreterapi/openapi.json"
   },
   {
     "id": "duckduckgolite",
     "name": "duckduckgolite",
-    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/duckduckgolite/openapi.json"
+    "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/duckduckgolite/openapi.json"
   },
   {
     "id": "gapier",
     "name": "gapier",
-    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/gapier/openapi.json",
+    "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/gapier/openapi.json",
     "authType": "bearer",
     "authLocation": "header",
     "authToken": "c6833d45-4434-41d4-82cd-e850157ef121"
@@ -25,7 +33,7 @@
   {
     "id": "webpilot",
     "name": "webpilot",
-    "schema": "https://ghp.ci/https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/webpilot/openapi.yaml",
+    "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/webpilot/openapi.yaml",
     "authType": "custom",
     "authLocation": "header",
     "authHeader": "WebPilot-Friend-UID",

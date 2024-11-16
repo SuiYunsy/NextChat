@@ -87,12 +87,17 @@ import { ProviderType } from "../utils/cloud";
 import { TTSConfigList } from "./tts-config";
 import { RealtimeConfigList } from "./realtime-chat/realtime-config";
 
+import withModalMask from "./withModalMask";
+export const EditPromptModalWithMask = withModalMask(EditPromptModal);
+export const UserPromptModalWithMask = withModalMask(UserPromptModal);
+export const SyncConfigModalWithMask = withModalMask(SyncConfigModal);
+
 function EditPromptModal(props: { id: string; onClose: () => void }) {
   const promptStore = usePromptStore();
   const prompt = promptStore.get(props.id);
 
   return prompt ? (
-    <div className="modal-mask">
+    // <div className="modal-mask">
       <Modal
         title={Locale.Settings.Prompt.EditModal.Title}
         onClose={props.onClose}
@@ -132,7 +137,7 @@ function EditPromptModal(props: { id: string; onClose: () => void }) {
           ></Input>
         </div>
       </Modal>
-    </div>
+    // </div>
   ) : null;
 }
 
@@ -157,7 +162,8 @@ function UserPromptModal(props: { onClose?: () => void }) {
   }, [searchInput]);
 
   return (
-    <div className="modal-mask">
+    // <div className="modal-mask">
+    <>
       <Modal
         title={Locale.Settings.Prompt.Modal.Title}
         onClose={() => props.onClose?.()}
@@ -232,12 +238,13 @@ function UserPromptModal(props: { onClose?: () => void }) {
       </Modal>
 
       {editingPromptId !== undefined && (
-        <EditPromptModal
+        <EditPromptModalWithMask
           id={editingPromptId!}
           onClose={() => setEditingPromptId(undefined)}
         />
       )}
-    </div>
+    </>
+    // </div>
   );
 }
 
@@ -326,7 +333,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
   const syncStore = useSyncStore();
 
   return (
-    <div className="modal-mask">
+    // <div className="modal-mask">
       <Modal
         title={Locale.Settings.Sync.Config.Modal.Title}
         onClose={() => props.onClose?.()}
@@ -479,7 +486,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
           </List>
         )}
       </Modal>
-    </div>
+    // </div>
   );
 }
 
@@ -572,7 +579,7 @@ function SyncItems() {
       </List>
 
       {showSyncConfigModal && (
-        <SyncConfigModal onClose={() => setShowSyncConfigModal(false)} />
+        <SyncConfigModalWithMask onClose={() => setShowSyncConfigModal(false)} />
       )}
     </>
   );
@@ -1798,7 +1805,7 @@ export function Settings() {
         </List>
 
         {shouldShowPromptModal && (
-          <UserPromptModal onClose={() => setShowPromptModal(false)} />
+          <UserPromptModalWithMask onClose={() => setShowPromptModal(false)} />
         )}
         <List>
           <RealtimeConfigList

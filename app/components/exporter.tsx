@@ -48,7 +48,15 @@ const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
 
 export function ExportMessageModal(props: { onClose: () => void }) {
   return (
-    <div className="modal-mask">
+    // <div className="modal-mask">
+    <div
+      className="modal-mask"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) {
+          props.onClose();
+        }
+      }}
+    >
       <Modal
         title={Locale.Export.Title}
         onClose={props.onClose}

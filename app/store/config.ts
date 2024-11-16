@@ -64,7 +64,7 @@ export const DEFAULT_CONFIG = {
   models: DEFAULT_MODELS as any as LLMModel[],
 
   modelConfig: {
-    model: "gpt-4o-mini" as ModelType,
+    model: "gemini-1.5-flash" as ModelType,
     providerName: "OpenAI" as ServiceProvider,
     temperature: 0.5,
     top_p: 0.9,
@@ -74,7 +74,7 @@ export const DEFAULT_CONFIG = {
     sendMemory: false,
     historyMessageCount: 8,
     compressMessageLengthThreshold: 2048,
-    compressModel: "gpt-4o-mini",
+    compressModel: "gemini-1.5-flash",
     compressProviderName: "OpenAI",
     enableInjectSystemPrompts: true,
     template: config?.template ?? DEFAULT_INPUT_TEMPLATE,
@@ -136,7 +136,7 @@ export const TTSConfigValidator = {
     return x as TTSVoiceType;
   },
   speed(x: number) {
-    return limitNumber(x, 0.25, 4.0, 1.0);
+    return limitNumber(x, 0.25, 4.00, 1.00);
   },
 };
 

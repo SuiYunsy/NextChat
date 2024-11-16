@@ -10,7 +10,7 @@ import React, {
 } from "react";
 
 import SendWhiteIcon from "../icons/send-white.svg";
-import BrainIcon from "../icons/brain.svg";
+// import BrainIcon from "../icons/brain.svg";
 import RenameIcon from "../icons/rename.svg";
 import ExportIcon from "../icons/share.svg";
 import ReturnIcon from "../icons/return.svg";
@@ -124,6 +124,11 @@ import { getModelProvider } from "../utils/model";
 import { RealtimeChat } from "@/app/components/realtime-chat";
 import clsx from "clsx";
 
+import withModalMask from "./withModalMask";
+export const SessionConfigModelWithMask = withModalMask(SessionConfigModel);
+export const EditMessageModalWithMask = withModalMask(EditMessageModal);
+export const ShortcutKeyModalWithMask = withModalMask(ShortcutKeyModal);
+
 const localStorage = safeLocalStorage();
 
 const ttsPlayer = createTTSPlayer();
@@ -139,7 +144,7 @@ export function SessionConfigModel(props: { onClose: () => void }) {
   const navigate = useNavigate();
 
   return (
-    <div className="modal-mask">
+    // <div className="modal-mask">
       <Modal
         title={Locale.Context.Edit}
         onClose={() => props.onClose()}
@@ -196,7 +201,7 @@ export function SessionConfigModel(props: { onClose: () => void }) {
           }
         ></MaskConfig>
       </Modal>
-    </div>
+    // </div>
   );
 }
 
@@ -205,13 +210,13 @@ function PromptToast(props: {
   showModal?: boolean;
   setShowModal: (_: boolean) => void;
 }) {
-  const chatStore = useChatStore();
-  const session = chatStore.currentSession();
-  const context = session.mask.context;
+  // const chatStore = useChatStore();
+  // const session = chatStore.currentSession();
+  // const context = session.mask.context;
 
   return (
     <div className={styles["prompt-toast"]} key="prompt-toast">
-      {props.showToast && context.length > 0 && (
+      {/* {props.showToast && context.length > 0 && (
         <div
           className={clsx(styles["prompt-toast-inner"], "clickable")}
           role="button"
@@ -222,9 +227,10 @@ function PromptToast(props: {
             {Locale.Context.Toast(context.length)}
           </span>
         </div>
-      )}
+      )} */}
       {props.showModal && (
-        <SessionConfigModel onClose={() => props.setShowModal(false)} />
+        // <SessionConfigModel onClose={() => props.setShowModal(false)} />
+        <SessionConfigModelWithMask onClose={() => props.setShowModal(false)} />
       )}
     </div>
   );
@@ -547,7 +553,7 @@ export function ChatActions(props: {
   const currentQuality = session.mask.modelConfig?.quality ?? "standard";
   const currentStyle = session.mask.modelConfig?.style ?? "vivid";
 
-  const isMobileScreen = useMobileScreen();
+  // const isMobileScreen = useMobileScreen();
 
   useEffect(() => {
     const show = isVisionModel(currentModel);
@@ -835,7 +841,7 @@ export function EditMessageModal(props: { onClose: () => void }) {
   const [messages, setMessages] = useState(session.messages.slice());
 
   return (
-    <div className="modal-mask">
+    // <div className="modal-mask">
       <Modal
         title={Locale.Chat.EditMessage.Title}
         onClose={props.onClose}
@@ -889,7 +895,7 @@ export function EditMessageModal(props: { onClose: () => void }) {
           }}
         />
       </Modal>
-    </div>
+    // </div>
   );
 }
 
@@ -923,7 +929,7 @@ export function ShortcutKeyModal(props: { onClose: () => void }) {
     },
   ];
   return (
-    <div className="modal-mask">
+    // <div className="modal-mask">
       <Modal
         title={Locale.Chat.ShortcutKey.Title}
         onClose={props.onClose}
@@ -958,7 +964,7 @@ export function ShortcutKeyModal(props: { onClose: () => void }) {
           </div>
         </div>
       </Modal>
-    </div>
+    // </div>
   );
 }
 
@@ -978,12 +984,12 @@ function _Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const { submitKey, shouldSubmit } = useSubmitHandler();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isScrolledToBottom = scrollRef?.current
-    ? Math.abs(
-        scrollRef.current.scrollHeight -
-          (scrollRef.current.scrollTop + scrollRef.current.clientHeight),
-      ) <= 1
-    : false;
+  // const isScrolledToBottom = scrollRef?.current
+  //   ? Math.abs(
+  //       scrollRef.current.scrollHeight -
+  //         (scrollRef.current.scrollTop + scrollRef.current.clientHeight),
+  //     ) <= 1
+  //   : false;
   const isAttachWithTop = useMemo(() => {
     const lastMessage = scrollRef.current?.lastElementChild as HTMLElement;
     // if scrolllRef is not ready or no message, return false
@@ -992,16 +998,17 @@ function _Chat() {
       lastMessage!.getBoundingClientRect().top -
       scrollRef.current.getBoundingClientRect().top;
     // leave some space for user question
-    return topDistance < 100;
+    return topDistance < 14;
   }, [scrollRef?.current?.scrollHeight]);
 
-  const isTyping = userInput !== "";
+  // const isTyping = userInput !== "";
 
   // if user is typing, should auto scroll to bottom
   // if user is not typing, should auto scroll to bottom only if already at bottom
   const { setAutoScroll, scrollDomToBottom } = useScrollToBottom(
     scrollRef,
-    (isScrolledToBottom || isAttachWithTop) && !isTyping,
+    isAttachWithTop
+    // (isScrolledToBottom || isAttachWithTop) && !isTyping,
   );
   const [hitBottom, setHitBottom] = useState(true);
   const isMobileScreen = useMobileScreen();
@@ -1142,7 +1149,7 @@ function _Chat() {
 
       // auto sync mask config from global config
       if (session.mask.syncGlobalConfig) {
-        console.log("[Mask] syncing from global, name = ", session.mask.name);
+        // console.log("[Mask] syncing from global, name = ", session.mask.name);
         session.mask.modelConfig = { ...config.modelConfig };
       }
     });
@@ -1242,7 +1249,7 @@ function _Chat() {
     const textContent = getMessageTextContent(userMessage);
     const images = getMessageImages(userMessage);
     chatStore.onUserInput(textContent, images).then(() => setIsLoading(false));
-    inputRef.current?.focus();
+    // inputRef.current?.focus();
     scrollToBottom();
   };
 
@@ -1665,9 +1672,9 @@ function _Chat() {
             >
               {!session.topic ? DEFAULT_TOPIC : session.topic}
             </div>
-            <div className="window-header-sub-title">
+            {/* <div className="window-header-sub-title">
               {Locale.Chat.SubTitle(session.messages.length)}
-            </div>
+            </div> */}
           </div>
           <div className="window-actions">
             <div className="window-action-button">
@@ -1932,10 +1939,10 @@ function _Chat() {
                               !isUser
                             }
                             onContextMenu={(e) => onRightClick(e, message)} // 挺好用的哈
-                            onDoubleClickCapture={() => {
-                              if (!isMobileScreen) return;
+                            // onDoubleClickCapture={() => {
+                              // if (!isMobileScreen) return;
                               // setUserInput(getMessageTextContent(message));
-                            }}
+                            // }}
                             fontSize={fontSize}
                             fontFamily={fontFamily}
                             parentRef={scrollRef}
@@ -2096,15 +2103,13 @@ function _Chat() {
       )}
 
       {isEditingMessage && (
-        <EditMessageModal
-          onClose={() => {
-            setIsEditingMessage(false);
-          }}
-        />
+        // <EditMessageModal onClose={() => { setIsEditingMessage(false); }} />
+        <EditMessageModalWithMask onClose={() => setIsEditingMessage(false)} />
       )}
 
       {showShortcutKeyModal && (
-        <ShortcutKeyModal onClose={() => setShowShortcutKeyModal(false)} />
+        // <ShortcutKeyModal onClose={() => setShowShortcutKeyModal(false)} />
+        <ShortcutKeyModalWithMask onClose={() => setShowShortcutKeyModal(false)} />
       )}
     </>
   );

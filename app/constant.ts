@@ -245,7 +245,7 @@ export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lan
 // Latex block: $$e=mc^2$$
 // `;
 export const DEFAULT_SYSTEM_TEMPLATE = `
-You are a large language model.
+你是一个大语言模型。
 Current model: {{model}}
 Current time: {{time}}
 Latex inline: \\(x^2\\) 
@@ -253,7 +253,7 @@ Latex block: $$e=mc^2$$
 `;
 
 export const SUMMARIZE_MODEL = "gpt-4o-mini";
-export const GEMINI_SUMMARIZE_MODEL = "gpt-4o-mini";
+export const GEMINI_SUMMARIZE_MODEL = "gemini-1.5-flash";
 
 export const KnowledgeCutOffDate: Record<string, string> = {
   default: "2021-09",
@@ -275,11 +275,11 @@ export const KnowledgeCutOffDate: Record<string, string> = {
   "gemini-pro-vision": "2023-12",
 };
 
-export const DEFAULT_TTS_ENGINE = "Edge-TTS";
+export const DEFAULT_TTS_ENGINE = "OpenAI-TTS";
 export const DEFAULT_TTS_ENGINES = ["OpenAI-TTS", "Edge-TTS"];
-export const DEFAULT_TTS_MODEL = "tts-1";
-export const DEFAULT_TTS_VOICE = "onyx";
-export const DEFAULT_TTS_MODELS = ["tts-1", "tts-1-hd"];
+export const DEFAULT_TTS_MODEL = "tts-ms";
+export const DEFAULT_TTS_VOICE = "alloy";
+export const DEFAULT_TTS_MODELS = ["tts-1", "tts-1-hd", "tts-az", "tts-ms"];
 export const DEFAULT_TTS_VOICES = [
   "alloy",
   "echo",
@@ -290,12 +290,7 @@ export const DEFAULT_TTS_VOICES = [
 ];
 
 const openaiModels = [
-  "gpt-4",
-  "gpt-4o",
-  "gpt-4-turbo",
-  "gpt-4o-mini",
   "dall-e-3",
-  "o1-mini",
 ];
 
 /* 

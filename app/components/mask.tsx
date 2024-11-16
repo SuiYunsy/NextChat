@@ -294,7 +294,7 @@ function ContextPromptItem(props: {
         value={getMessageTextContent(props.prompt)}
         type="text"
         className={chatStyle["context-content"]}
-        rows={focusingInput ? 5 : 1}
+        rows={focusingInput ? 10 : 1}
         onFocus={() => setFocusingInput(true)}
         onBlur={() => {
           setFocusingInput(false);
@@ -637,7 +637,15 @@ export function MaskPage() {
       </div>
 
       {editingMask && (
-        <div className="modal-mask">
+        // <div className="modal-mask">
+        <div
+          className="modal-mask"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              closeMaskModal();
+            }
+          }}
+        >
           <Modal
             title={Locale.Mask.EditModal.Title(editingMask?.builtin)}
             onClose={closeMaskModal}

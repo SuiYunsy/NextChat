@@ -235,7 +235,15 @@ export function PluginPage() {
       </div>
 
       {editingPlugin && (
-        <div className="modal-mask">
+        // <div className="modal-mask">
+        <div
+          className="modal-mask"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              closePluginModal();
+            }
+          }}
+        >
           <Modal
             title={Locale.Plugin.EditModal.Title(editingPlugin?.builtin)}
             onClose={closePluginModal}
@@ -350,6 +358,21 @@ export function PluginPage() {
                           __html: editingPlugin.content,
                         }}
                         onBlur={onChangePlugin}
+                        onPaste={(e) => {
+                          e.preventDefault(); // 阻止默认的粘贴行为
+                          const text = e.clipboardData.getData("text/plain"); // 从剪贴板获取纯文本内容
+                          const selection = window.getSelection(); // 获取当前选区对象
+                          if (selection?.rangeCount) { // 检查是否有选区存在
+                            const range = selection.getRangeAt(0); // 获取选区中的第一个范围
+                            range.deleteContents(); // 删除选区中的内容
+                            const textNode = document.createTextNode(text); // 创建一个文本节点
+                            range.insertNode(textNode); // 在选区位置插入纯文本节点
+                            range.setStartAfter(textNode); // 将选区的开始位置设置在插入的文本节点之后
+                            range.setEndAfter(textNode); // 将选区的结束位置设置在插入的文本节点之后
+                            selection.removeAllRanges(); // 清除所有选区
+                            selection.addRange(range); // 添加新的选区
+                          }
+                        }}
                       ></code>
                     </pre>
                   </div>

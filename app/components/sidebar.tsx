@@ -8,10 +8,10 @@ import GithubIcon from "../icons/github.svg";
 import ChatGptIcon from "../icons/chatgpt.svg";
 import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
-import MaskIcon from "../icons/mask.svg";
+// import MaskIcon from "../icons/mask.svg";
 import DragIcon from "../icons/drag.svg";
-import DiscoveryIcon from "../icons/discovery.svg";
-import SearchIcon from "../icons/search.svg";
+// import DiscoveryIcon from "../icons/discovery.svg";
+// import SearchIcon from "../icons/search.svg";
 
 import Locale from "../locales";
 
@@ -23,14 +23,15 @@ import {
   MIN_SIDEBAR_WIDTH,
   NARROW_SIDEBAR_WIDTH,
   Path,
-  PLUGINS,
+  // PLUGINS,
   REPO_URL,
 } from "../constant";
 
 import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
-import { showConfirm, Selector } from "./ui-lib";
+// import { showConfirm, Selector } from "./ui-lib";
+import { showConfirm } from "./ui-lib";
 import { SearchBar, SearchInputRef } from "./search-bar";
 import clsx from "clsx";
 
@@ -183,9 +184,9 @@ export function SideBarHeader(props: {
           <div className={styles["sidebar-title"]} data-tauri-drag-region>
             {title}
           </div>
-          <div className={styles["sidebar-sub-title"]}>{subTitle}</div>
+          {/* <div className={styles["sidebar-sub-title"]}>{subTitle}</div> */}
         </div>
-        <div className={clsx(styles["sidebar-logo"], "no-dark")}>{logo}</div>
+        {/* <div className={clsx(styles["sidebar-logo"], "no-dark")}>{logo}</div> */}
       </div>
       {children}
     </Fragment>
@@ -207,12 +208,15 @@ export function SideBarBody(props: {
 export function SideBarTail(props: {
   primaryAction?: React.ReactNode;
   secondaryAction?: React.ReactNode;
+  shouldNarrow?: boolean;
 }) {
-  const { primaryAction, secondaryAction } = props;
+  const { primaryAction, secondaryAction, shouldNarrow } = props;
 
   return (
     <div className={styles["sidebar-tail"]}>
-      <div className={styles["sidebar-actions"]}>{primaryAction}</div>
+      {!shouldNarrow && (
+        <div className={styles["sidebar-actions"]}>{primaryAction}</div>
+      )}
       <div className={styles["sidebar-actions"]}>{secondaryAction}</div>
     </div>
   );
@@ -221,7 +225,7 @@ export function SideBarTail(props: {
 export function SideBar(props: { className?: string }) {
   useHotKey();
   const { onDragStart, shouldNarrow } = useDragSideBar();
-  const [showPluginSelector, setShowPluginSelector] = useState(false);
+  // const [showPluginSelector, setShowPluginSelector] = useState(false);
   const navigate = useNavigate();
   const config = useAppConfig();
   const chatStore = useChatStore();
@@ -245,13 +249,14 @@ export function SideBar(props: { className?: string }) {
       shouldNarrow={shouldNarrow}
       {...props}
     >
+      {!shouldNarrow &&
       <SideBarHeader
         title="GG"
         subTitle=""
         logo={<ChatGptIcon />}
         shouldNarrow={shouldNarrow}
       >
-        <div className={styles["sidebar-header-bar"]}>
+        {/* <div className={styles["sidebar-header-bar"]}>
           <IconButton
             icon={<MaskIcon />}
             text={shouldNarrow ? undefined : Locale.Mask.Name}
@@ -302,9 +307,11 @@ export function SideBar(props: { className?: string }) {
               navigate(s[0], { state: { fromHome: true } });
             }}
           />
-        )}
+        )} */}
       </SideBarHeader>
+      }
 
+      {!shouldNarrow &&
       <div
         className={
           styles["sidebar-search-bar"] +
@@ -316,6 +323,7 @@ export function SideBar(props: { className?: string }) {
           <SearchBar ref={searchBarRef} setIsSearching={setIsSearching} />
         )}
       </div>
+      }
 
       {!isSearching && (
         <div
@@ -379,6 +387,7 @@ export function SideBar(props: { className?: string }) {
             shadow
           />
         }
+        shouldNarrow={shouldNarrow}
       />
     </SideBarContainer>
   );

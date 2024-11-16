@@ -112,10 +112,10 @@ export function TTSConfigList(props: {
           >
             <InputRange
               aria={Locale.Settings.TTS.Speed.Title}
-              value={props.ttsConfig.speed?.toFixed(1)}
-              min="0.3"
-              max="4.0"
-              step="0.1"
+              value={props.ttsConfig.speed?.toFixed(2)}
+              min="0.25"
+              max="4.00"
+              step="0.05"
               onChange={(e) => {
                 props.updateConfig(
                   (config) =>
