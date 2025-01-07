@@ -34,9 +34,9 @@ import CloseIcon from "../icons/close.svg";
 import CancelIcon from "../icons/cancel.svg";
 import ImageIcon from "../icons/image.svg";
 
-import LightIcon from "../icons/light.svg";
-import DarkIcon from "../icons/dark.svg";
-import AutoIcon from "../icons/auto.svg";
+// import LightIcon from "../icons/light.svg";
+// import DarkIcon from "../icons/dark.svg";
+// import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import RobotIcon from "../icons/robot.svg";
@@ -70,7 +70,7 @@ import {
   getMessageImages,
   isVisionModel,
   isDalle3,
-  showPlugins,
+  // showPlugins,
   safeLocalStorage,
   getModelSizes,
   supportsCustomSize,
@@ -308,10 +308,17 @@ export function PromptHints(props: {
       const changeIndex = (delta: number) => {
         e.stopPropagation();
         e.preventDefault();
-        const nextIndex = Math.max(
-          0,
-          Math.min(props.prompts.length - 1, selectIndex + delta),
-        );
+
+        let nextIndex = selectIndex + delta;
+        // 如果超出底部，跳转到头部
+        if (nextIndex >= props.prompts.length) {
+          nextIndex = 0;
+        }
+        // 如果超出头部，跳转到底部
+        else if (nextIndex < 0) {
+          nextIndex = props.prompts.length - 1;
+        }
+
         setSelectIndex(nextIndex);
         selectedRef.current?.scrollIntoView({
           block: "center",
@@ -488,11 +495,13 @@ export function ChatActions(props: {
   showPromptModal: () => void;
   scrollToBottom: () => void;
   showPromptHints: () => void;
+  showChatCommands: () => void;
   hitBottom: boolean;
   uploading: boolean;
   setShowShortcutKeyModal: React.Dispatch<React.SetStateAction<boolean>>;
   setUserInput: (input: string) => void;
   setShowChatSidePanel: React.Dispatch<React.SetStateAction<boolean>>;
+  setHitBottom: (hitBottom: boolean) => void; // 新增 setHitBottom 方法
 }) {
   const config = useAppConfig();
   const navigate = useNavigate();
@@ -583,6 +592,7 @@ export function ChatActions(props: {
           : nextModel.name,
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatStore, currentModel, models, session]);
 
   return (
@@ -597,7 +607,10 @@ export function ChatActions(props: {
         )}
         {!props.hitBottom && (
           <ChatAction
-            onClick={props.scrollToBottom}
+            onClick={() => {
+              props.scrollToBottom();
+              props.setHitBottom(true); // 点击后设置 hitBottom 为 true
+            }}
             text={Locale.Chat.InputActions.ToBottom}
             icon={<BottomIcon />}
           />
@@ -610,7 +623,7 @@ export function ChatActions(props: {
           />
         )}
 
-        <ChatAction
+        {/* <ChatAction
           onClick={nextTheme}
           text={Locale.Chat.InputActions.Theme[theme]}
           icon={
@@ -624,11 +637,31 @@ export function ChatActions(props: {
               ) : null}
             </>
           }
-        />
+        /> */}
 
-        <ChatAction
+        {/* <ChatAction
           onClick={props.showPromptHints}
           text={Locale.Chat.InputActions.Prompt}
+          icon={<PromptIcon />}
+        /> */}
+        <ChatAction
+          text={Locale.Chat.InputActions.Clear}
+          icon={<BreakIcon />}
+          onClick={() => {
+            props.scrollToBottom();
+            chatStore.updateTargetSession(session, (session) => {
+              if (session.clearContextIndex === session.messages.length) {
+                session.clearContextIndex = undefined;
+              } else {
+                session.clearContextIndex = session.messages.length;
+                session.memoryPrompt = ""; // will clear memory
+              }
+            });
+          }}
+        />
+        <ChatAction
+          onClick={props.showChatCommands}
+          text={"命令"}
           icon={<PromptIcon />}
         />
 
@@ -640,7 +673,7 @@ export function ChatActions(props: {
           icon={<MaskIcon />}
         /> */}
 
-        {showPlugins(currentProviderName, currentModel) && (
+        {/* {showPlugins(currentProviderName, currentModel) && ( */}
           <ChatAction
             onClick={() => {
               if (pluginStore.getAll().length == 0) {
@@ -652,7 +685,7 @@ export function ChatActions(props: {
             text={Locale.Plugin.Name}
             icon={<PluginIcon />}
           />
-        )}
+        {/* )} */}
         {showPluginSelector && (
           <Selector
             multiple
@@ -670,22 +703,6 @@ export function ChatActions(props: {
             }}
           />
         )}
-
-        <ChatAction
-          text={Locale.Chat.InputActions.Clear}
-          icon={<BreakIcon />}
-          onClick={() => {
-            props.scrollToBottom();
-            chatStore.updateTargetSession(session, (session) => {
-              if (session.clearContextIndex === session.messages.length) {
-                session.clearContextIndex = undefined;
-              } else {
-                session.clearContextIndex = session.messages.length;
-                session.memoryPrompt = ""; // will clear memory
-              }
-            });
-          }}
-        />
 
         <ChatAction
           onClick={() => setShowModelSelector(true)}
@@ -1008,6 +1025,7 @@ function _Chat() {
       scrollRef.current.getBoundingClientRect().top;
     // leave some space for user question
     return topDistance < 14;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollRef?.current?.scrollHeight]);
 
   // const isTyping = userInput !== "";
@@ -1060,18 +1078,28 @@ function _Chat() {
 
   // chat commands shortcuts
   const chatCommands = useChatCommand({
-    new: () => chatStore.newSession(),
-    newm: () => navigate(Path.NewChat),
-    prev: () => chatStore.nextSession(-1),
-    next: () => chatStore.nextSession(1),
-    clear: () =>
-      chatStore.updateTargetSession(
-        session,
-        (session) => (session.clearContextIndex = session.messages.length),
-      ),
-    fork: () => chatStore.forkSession(),
+    resend: () => onResend(session.messages[session.messages.length - 1]),
+    add: () => chatStore.newSession(),
+    mask: () => navigate(Path.Masks),
+    // clear: () =>
+    //   chatStore.updateTargetSession(
+    //     session,
+    //     (session) => (session.clearContextIndex = session.messages.length),
+    //   ),
     del: () => chatStore.deleteSession(chatStore.currentSessionIndex),
+    fork: () => chatStore.forkSession(),
+    ...(isMobileScreen && { // 使用对象展开运算符和条件判断来添加 next 和 prev 命令
+      next: () => chatStore.nextSession(1),
+      prev: () => chatStore.nextSession(-1),
+    }),
   });
+  const [showCommandHints, setShowCommandHints] = useState(false);
+  const showChatCommands = () => {
+    setShowCommandHints(!showCommandHints);
+  };
+  const commandHints = useMemo(() => {
+    return chatCommands.search("");
+  }, [chatCommands]);
 
   // only search prompts when user input is short
   const SEARCH_TEXT_LIMIT = 30;
@@ -1086,7 +1114,7 @@ function _Chat() {
       setPromptHints(chatCommands.search(text));
     } else if (!config.disablePromptHint && n < SEARCH_TEXT_LIMIT) {
       // check if need to trigger auto completion
-      if (text.startsWith("/")) {
+      if (text.startsWith("/")|| text.startsWith("、")) {
         let searchText = text.slice(1);
         onSearch(searchText);
       }
@@ -1111,6 +1139,7 @@ function _Chat() {
     setUserInput("");
     setPromptHints([]);
     if (!isMobileScreen) inputRef.current?.focus();
+    setTimeout(() => { scrollToBottom(); }, 1);
     setAutoScroll(true);
   };
 
@@ -1121,8 +1150,10 @@ function _Chat() {
       const matchedChatCommand = chatCommands.match(prompt.content);
       if (matchedChatCommand.matched) {
         // if user is selecting a chat command, just trigger it
-        matchedChatCommand.invoke();
         setUserInput("");
+        setTimeout(() => {
+          matchedChatCommand.invoke();
+        },1)
       } else {
         // or fill the prompt
         setUserInput(prompt.content);
@@ -1158,7 +1189,7 @@ function _Chat() {
 
       // auto sync mask config from global config
       if (session.mask.syncGlobalConfig) {
-        // console.log("[Mask] syncing from global, name = ", session.mask.name);
+        console.log("[Mask] syncing from global, name = ", session.mask.name);
         session.mask.modelConfig = { ...config.modelConfig };
       }
     });
@@ -1258,8 +1289,8 @@ function _Chat() {
     const textContent = getMessageTextContent(userMessage);
     const images = getMessageImages(userMessage);
     chatStore.onUserInput(textContent, images).then(() => setIsLoading(false));
-    // inputRef.current?.focus();
-    scrollToBottom();
+    if (!isMobileScreen) inputRef.current?.focus();
+    setTimeout(() => { scrollToBottom(); }, 1);
   };
 
   const onPinMessage = (message: ChatMessage) => {
@@ -1530,8 +1561,8 @@ function _Chat() {
             );
             const imagesLength = images.length;
 
-            if (imagesLength > 3) {
-              images.splice(3, imagesLength - 3);
+            if (imagesLength > 33) {
+              images.splice(33, imagesLength - 33);
             }
             setAttachImages(images);
           }
@@ -1562,7 +1593,7 @@ function _Chat() {
               .then((dataUrl) => {
                 imagesData.push(dataUrl);
                 if (
-                  imagesData.length === 3 ||
+                  imagesData.length === 33 ||
                   imagesData.length === files.length
                 ) {
                   setUploading(false);
@@ -1580,8 +1611,8 @@ function _Chat() {
     );
 
     const imagesLength = images.length;
-    if (imagesLength > 3) {
-      images.splice(3, imagesLength - 3);
+    if (imagesLength > 33) {
+      images.splice(33, imagesLength - 33);
     }
     setAttachImages(images);
   }
@@ -1591,7 +1622,7 @@ function _Chat() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // 打开新聊天 command + shift + o
+      // 打开新对话 command + shift + o
       if (
         (event.metaKey || event.ctrlKey) &&
         event.shiftKey &&
@@ -1603,7 +1634,7 @@ function _Chat() {
           navigate(Path.Chat);
         }, 10);
       }
-      // 聚焦聊天输入 shift + esc
+      // 聚焦对话输入 shift + esc
       else if (event.shiftKey && event.key.toLowerCase() === "escape") {
         event.preventDefault();
         inputRef.current?.focus();
@@ -1667,6 +1698,13 @@ function _Chat() {
   }, [messages, chatStore, navigate, session]);
 
   const [showChatSidePanel, setShowChatSidePanel] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => { // 渲染完成后，延时滚动到底部
+      scrollToBottom();
+    }, 1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 空依赖数组，表示只在组件挂载时执行
 
   return (
     <>
@@ -1915,16 +1953,19 @@ function _Chat() {
                               </div>
                             </div>
                           )}
-                          {!isUser && (
+                          {isContext && (
+                            <div className={styles["chat-is-context"]}>
+                              {Locale.Chat.IsContext}
+                            </div>
+                          )}
+                          {!isUser && !isContext && (
                             <div className={styles["chat-model-name"]}>
                               {message.model}
                             </div>
                           )}
-                          {isUser && (
+                          {isUser && !isContext && (
                             <div className={styles["chat-message-action-date"]}>
-                              {isContext
-                                ? Locale.Chat.IsContext
-                                : message.date.toLocaleString()}
+                              {message.date.toLocaleString()}
                             </div>
                           )}
                         </div>
@@ -2018,6 +2059,18 @@ function _Chat() {
               })}
             </div>
             <div className={styles["chat-input-panel"]}>
+              {showCommandHints && (
+                <PromptHints
+                  prompts={commandHints}
+                  onPromptSelect={(prompt) => {
+                    const matchedChatCommand = chatCommands.match(prompt.content);
+                    if (matchedChatCommand.matched) {
+                      matchedChatCommand.invoke();
+                      setShowCommandHints(false);
+                    }
+                  }}
+                />
+              )}
               <PromptHints
                 prompts={promptHints}
                 onPromptSelect={onPromptSelect}
@@ -2035,6 +2088,7 @@ function _Chat() {
                   // Click again to close
                   if (promptHints.length > 0) {
                     setPromptHints([]);
+                    setUserInput("");
                     return;
                   }
 
@@ -2042,9 +2096,11 @@ function _Chat() {
                   setUserInput("/");
                   onSearch("");
                 }}
+                showChatCommands={showChatCommands}
                 setShowShortcutKeyModal={setShowShortcutKeyModal}
                 setUserInput={setUserInput}
                 setShowChatSidePanel={setShowChatSidePanel}
+                setHitBottom={setHitBottom} // 传递 setHitBottom 函数
               />
               <label
                 className={clsx(styles["chat-input-panel-inner"], {

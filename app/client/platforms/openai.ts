@@ -58,12 +58,12 @@ export interface RequestPayload {
     role: "system" | "user" | "assistant";
     content: string | MultimodalContent[];
   }[];
-  stream?: boolean;
   model: string;
-  temperature: number;
-  presence_penalty: number;
-  frequency_penalty: number;
-  top_p: number;
+  stream?: boolean;
+  temperature?: number;
+  presence_penalty?: number;
+  frequency_penalty?: number;
+  top_p?: number;
   max_tokens?: number;
   max_completion_tokens?: number;
 }
@@ -195,7 +195,11 @@ export class ChatGPTApi implements LLMApi {
     let requestPayload: RequestPayload | DalleRequestPayload;
 
     const isDalle3 = _isDalle3(options.config.model);
-    const isO1 = options.config.model.startsWith("o1");
+    const isO1OrO3 = options.config.model.startsWith("o1") || options.config.model.startsWith("o3");
+    const isGemini = options.config.model.startsWith("gemini");
+    const isQwen = options.config.model.toLowerCase().includes("qwen");
+    const isR1 = ["r1","R1","reasoner"].some(str => modelConfig.model.includes(str));
+    const isSPECIAL = isO1OrO3 || isGemini || isQwen || isR1;
     if (isDalle3) {
       const prompt = getMessageTextContent(
         options.messages.slice(-1)?.pop() as any,
@@ -217,32 +221,51 @@ export class ChatGPTApi implements LLMApi {
         const content = visionModel
           ? await preProcessImageContent(v.content)
           : getMessageTextContent(v);
-        if (!(isO1 && v.role === "system"))
+          if (!(isO1OrO3 && v.role === "system"))
           messages.push({ role: v.role, content });
       }
 
       // O1 not support image, tools (plugin in ChatGPTNextWeb) and system, stream, logprobs, temperature, top_p, n, presence_penalty, frequency_penalty yet.
       requestPayload = {
         messages,
-        stream: options.config.stream,
         model: modelConfig.model,
-        temperature: !isO1 ? modelConfig.temperature : 1,
-        presence_penalty: !isO1 ? modelConfig.presence_penalty : 0,
-        frequency_penalty: !isO1 ? modelConfig.frequency_penalty : 0,
-        top_p: !isO1 ? modelConfig.top_p : 1,
+        stream: options.config.stream,
+        temperature: !isO1OrO3 ? modelConfig.temperature : 1,
+        // presence_penalty: !isO1OrO3 ? modelConfig.presence_penalty : 0,
+        // frequency_penalty: !isO1OrO3 ? modelConfig.frequency_penalty : 0,
+        // top_p: !isO1OrO3 ? modelConfig.top_p : 1,
         // max_tokens: Math.max(modelConfig.max_tokens, 1024),
         // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
       };
 
-      // O1 使用 max_completion_tokens 控制token数 (https://platform.openai.com/docs/guides/reasoning#controlling-costs)
-      if (isO1) {
-        requestPayload["max_completion_tokens"] = modelConfig.max_tokens;
+      if (modelConfig.presence_penalty !== 0 && !isSPECIAL) {
+        requestPayload["presence_penalty"] = modelConfig.presence_penalty;
+      }
+
+      if (modelConfig.frequency_penalty !== 0 && !isSPECIAL) {
+        requestPayload["frequency_penalty"] = modelConfig.frequency_penalty;
+      }
+
+      if (isQwen) {
+        requestPayload["top_p"] = Math.min(modelConfig.top_p, 0.99);
+      } else {
+        requestPayload["top_p"] = !isO1OrO3 ? modelConfig.top_p : 1;
+      }
+
+      // max_tokens 不等于 -1 时才加上此字段
+      if (modelConfig.max_tokens != -1) {
+        // O1 使用 max_completion_tokens 控制token数 (https://platform.openai.com/docs/guides/reasoning#controlling-costs)
+        if (isO1OrO3) {
+          requestPayload["max_completion_tokens"] = modelConfig.max_tokens;
+        } else {
+          requestPayload["max_tokens"] = modelConfig.max_tokens;
+        }
       }
 
       // add max_tokens to vision model
-      if (visionModel) {
-        requestPayload["max_tokens"] = modelConfig.max_tokens;
-      }
+      // if (visionModel) {
+        // requestPayload["max_tokens"] = 4096;
+      // }
     }
 
     console.log("[Request] openai payload: ", requestPayload);
@@ -359,7 +382,7 @@ export class ChatGPTApi implements LLMApi {
         // make a fetch request
         const requestTimeoutId = setTimeout(
           () => controller.abort(),
-          isDalle3 || isO1 ? REQUEST_TIMEOUT_MS * 4 : REQUEST_TIMEOUT_MS, // dalle3 using b64_json is slow.
+          isDalle3 || isO1OrO3 || isR1 ? REQUEST_TIMEOUT_MS * 4 : REQUEST_TIMEOUT_MS, // dalle3 using b64_json is slow.
         );
 
         const res = await fetch(chatPath, chatPayload);

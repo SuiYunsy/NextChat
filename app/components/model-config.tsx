@@ -6,7 +6,7 @@ import { InputRange } from "./input-range";
 import { ListItem, Select } from "./ui-lib";
 import { useAllModels } from "../utils/hooks";
 import { groupBy } from "lodash-es";
-import styles from "./model-config.module.scss";
+// import styles from "./model-config.module.scss";
 import { getModelProvider } from "../utils/model";
 
 export function ModelConfigList(props: {
@@ -35,6 +35,36 @@ export function ModelConfigList(props: {
             props.updateConfig((config) => {
               config.model = ModalConfigValidator.model(model);
               config.providerName = providerName as ServiceProvider;
+            });
+          }}
+        >
+          {Object.keys(groupModels).map((providerName, index) => (
+            <optgroup label={providerName} key={index}>
+              {groupModels[providerName].map((v, i) => (
+                <option value={`${v.name}@${v.provider?.providerName}`} key={i}>
+                  {v.displayName}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </Select>
+      </ListItem>
+      <ListItem
+        title={Locale.Settings.CompressModel.Title}
+        subTitle={Locale.Settings.CompressModel.SubTitle}
+      >
+        <Select
+          align="left"
+          // className={styles["select-compress-model"]}
+          aria-label={Locale.Settings.CompressModel.Title}
+          value={compressModelValue}
+          onChange={(e) => {
+            const [model, providerName] = getModelProvider(
+              e.currentTarget.value,
+            );
+            props.updateConfig((config) => {
+              config.compressModel = ModalConfigValidator.model(model);
+              config.compressProviderName = providerName as ServiceProvider;
             });
           }}
         >
@@ -96,8 +126,8 @@ export function ModelConfigList(props: {
         <input
           aria-label={Locale.Settings.MaxTokens.Title}
           type="number"
-          min={0}
-          max={512000}
+          min={-1}
+          max={32768}
           value={props.modelConfig.max_tokens}
           onChange={(e) =>
             props.updateConfig(
@@ -210,25 +240,6 @@ export function ModelConfigList(props: {
         ></InputRange>
       </ListItem>
 
-      <ListItem
-        title={Locale.Settings.CompressThreshold.Title}
-        subTitle={Locale.Settings.CompressThreshold.SubTitle}
-      >
-        <input
-          aria-label={Locale.Settings.CompressThreshold.Title}
-          type="number"
-          min={500}
-          max={4000}
-          value={props.modelConfig.compressMessageLengthThreshold}
-          onChange={(e) =>
-            props.updateConfig(
-              (config) =>
-                (config.compressMessageLengthThreshold =
-                  e.currentTarget.valueAsNumber),
-            )
-          }
-        ></input>
-      </ListItem>
       <ListItem title={Locale.Memory.Title} subTitle={Locale.Memory.Send}>
         <input
           aria-label={Locale.Memory.Title}
@@ -241,34 +252,28 @@ export function ModelConfigList(props: {
           }
         ></input>
       </ListItem>
-      <ListItem
-        title={Locale.Settings.CompressModel.Title}
-        subTitle={Locale.Settings.CompressModel.SubTitle}
-      >
-        <Select
-          className={styles["select-compress-model"]}
-          aria-label={Locale.Settings.CompressModel.Title}
-          value={compressModelValue}
-          onChange={(e) => {
-            const [model, providerName] = getModelProvider(
-              e.currentTarget.value,
-            );
-            props.updateConfig((config) => {
-              config.compressModel = ModalConfigValidator.model(model);
-              config.compressProviderName = providerName as ServiceProvider;
-            });
-          }}
+      {props.modelConfig.sendMemory && (
+        <ListItem
+          title={Locale.Settings.CompressThreshold.Title}
+          subTitle={Locale.Settings.CompressThreshold.SubTitle}
         >
-          {allModels
-            .filter((v) => v.available)
-            .map((v, i) => (
-              <option value={`${v.name}@${v.provider?.providerName}`} key={i}>
-                {/* {v.displayName}({v.provider?.providerName}) */}
-                {v.displayName}
-              </option>
-            ))}
-        </Select>
-      </ListItem>
+          <input
+            aria-label={Locale.Settings.CompressThreshold.Title}
+            type="number"
+            min={0}
+            max={32768}
+            value={props.modelConfig.compressMessageLengthThreshold}
+            onChange={(e) =>
+              props.updateConfig(
+                (config) =>
+                  (config.compressMessageLengthThreshold = ModalConfigValidator.CompressThreshold(
+                    e.currentTarget.valueAsNumber,
+                  )),
+              )
+            }
+          ></input>
+        </ListItem>
+      )}
     </>
   );
 }

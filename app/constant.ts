@@ -256,16 +256,14 @@ export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lan
 // Latex inline: $x^2$
 // Latex block: $$e=mc^2$$
 // `;
-export const DEFAULT_SYSTEM_TEMPLATE = `
-你是一个大语言模型。
+export const DEFAULT_SYSTEM_TEMPLATE = `你是一个大语言模型。
 Current model: {{model}}
 Current time: {{time}}
 Latex inline: \\(x^2\\) 
-Latex block: $$e=mc^2$$
-`;
+Latex block: $$e=mc^2$$`;
 
-export const SUMMARIZE_MODEL = "gpt-4o-mini";
-export const GEMINI_SUMMARIZE_MODEL = "gemini-1.5-flash";
+// export const SUMMARIZE_MODEL = "glm-4-flash";
+// export const GEMINI_SUMMARIZE_MODEL = "glm-4-flash";
 
 export const KnowledgeCutOffDate: Record<string, string> = {
   default: "2021-09",
@@ -308,9 +306,7 @@ export const VISION_MODEL_REGEXES = [
   /vision/,
   /gpt-4o/,
   /claude-3/,
-  /gemini-1\.5/,
-  /gemini-exp/,
-  /gemini-2\.0/,
+  /gemini/,
   /learnlm/,
   /qwen-vl/,
   /qwen2-vl/,
@@ -324,7 +320,13 @@ export const EXCLUDE_VISION_MODEL_REGEXES = [/claude-3-5-haiku-20241022/];
 const openaiModels = [
   "dall-e-3",
 ];
-
+const chatglmModels = [
+  "glm-4-flash", // free
+  "glm-4v-flash", // free
+  "cogview-3-flash", // free
+  // 目前无法适配轮询任务
+  // "cogvideox-flash", // free
+];
 /* 
 const googleModels = [
   "gemini-1.0-pro", // Deprecated on 2/15/2025
@@ -417,26 +419,6 @@ const iflytekModels = [
 const deepseekModels = ["deepseek-chat", "deepseek-coder"];
 
 const xAIModes = ["grok-beta"];
-
-const chatglmModels = [
-  "glm-4-plus",
-  "glm-4-0520",
-  "glm-4",
-  "glm-4-air",
-  "glm-4-airx",
-  "glm-4-long",
-  "glm-4-flashx",
-  "glm-4-flash", // free
-  "glm-4v-plus",
-  "glm-4v",
-  "glm-4v-flash", // free
-  "cogview-3-plus",
-  "cogview-3",
-  "cogview-3-flash", // free
-  // 目前无法适配轮询任务
-  //   "cogvideox",
-  //   "cogvideox-flash", // free
-];
 */
 
 let seq = 1000; // 内置的模型序号生成器从1000开始
@@ -452,7 +434,19 @@ export const DEFAULT_MODELS = [
       sorted: 1, // 这里是固定的，确保顺序与之前内置的版本一致
     },
   })),
-/*   ...openaiModels.map((name) => ({
+  ...chatglmModels.map((name) => ({
+    name,
+    available: true,
+    sorted: seq++,
+    provider: {
+      id: "chatglm",
+      providerName: "ChatGLM",
+      providerType: "chatglm",
+      sorted: 12,
+    },
+  })),
+/*   
+  ...openaiModels.map((name) => ({
     name,
     available: true,
     sorted: seq++,
@@ -562,17 +556,6 @@ export const DEFAULT_MODELS = [
       sorted: 11,
     },
   })),
-  ...chatglmModels.map((name) => ({
-    name,
-    available: true,
-    sorted: seq++,
-    provider: {
-      id: "chatglm",
-      providerName: "ChatGLM",
-      providerType: "chatglm",
-      sorted: 12,
-    },
-  })),
   ...deepseekModels.map((name) => ({
     name,
     available: true,
@@ -584,7 +567,8 @@ export const DEFAULT_MODELS = [
       sorted: 13,
     },
   })),
-  })), */
+  })),
+*/
 ] as const;
 
 export const CHAT_PAGE_SIZE = 15;

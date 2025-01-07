@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import Locale from "./locales";
+// import Locale from "./locales";
 
 type Command = (param: string) => void;
 interface Commands {
@@ -33,13 +33,14 @@ export function useCommand(commands: Commands = {}) {
 }
 
 interface ChatCommands {
-  new?: Command;
-  newm?: Command;
+  resend?: Command;
+  add?: Command;
+  mask?: Command;
+  // clear?: Command;
+  del?: Command;
+  fork?: Command;
   next?: Command;
   prev?: Command;
-  clear?: Command;
-  fork?: Command;
-  del?: Command;
 }
 
 // Compatible with Chinese colon character "："
@@ -56,7 +57,16 @@ export function useChatCommand(commands: ChatCommands = {}) {
 
   function search(userInput: string) {
     const input = extract(userInput);
-    const desc = Locale.Chat.Commands;
+    const desc = {
+      resend: "重发消息",
+      add: "新增对话",
+      mask: "面具对话",
+      // clear: "清除上下文",
+      del: "删除对话",
+      fork: "复制对话",
+      next: "下一个对话",
+      prev: "上一个对话",
+    };
     return Object.keys(commands)
       .filter((c) => c.startsWith(input))
       .map((c) => ({

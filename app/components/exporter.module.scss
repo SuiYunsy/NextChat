@@ -104,7 +104,7 @@
 .image-previewer {
   .preview-body {
     border-radius: 10px;
-    padding: 20px;
+    padding-bottom: 10px;
     box-shadow: var(--card-shadow) inset;
     background-color: var(--gray);
 
@@ -115,18 +115,18 @@
       margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
       position: relative;
       overflow: hidden;
 
-      @media screen and (max-width: 600px) {
+/*       @media screen and (max-width: 600px) {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: flex-end;
 
         .icons {
           margin-bottom: 20px;
         }
-      }
+      } */
 
       .logo {
         position: absolute;
@@ -173,17 +173,17 @@
     }
 
     .message {
-      margin-bottom: 20px;
+      margin: 0 10px 10px 10px;
       display: flex;
 
       .avatar {
-        margin-right: 10px;
+        margin-right: 2px;
       }
 
       .body {
         border-radius: 10px;
         padding: 8px 10px;
-        max-width: calc(100% - 104px);
+        max-width: calc(100% - 90px);
         box-shadow: var(--card-shadow);
         border: var(--border-in-light);
 
@@ -261,7 +261,7 @@
 
         .body {
           background-color: var(--second);
-          margin-right: 10px;
+          margin-right: 2px;
         }
       }
     }

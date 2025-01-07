@@ -80,7 +80,7 @@
   border: var(--border-in-light);
   border-radius: 10px;
   box-shadow: var(--card-shadow);
-  margin-bottom: 20px;
+  margin: 10px 0;
   animation: slide-in ease 0.3s;
   background: var(--white);
 }
@@ -95,7 +95,7 @@
   border-radius: 12px;
   width: 80vw;
   max-width: 900px;
-  min-width: 234px;
+  min-width: 224px;
   animation: slide-in ease 0.3s;
 
   --modal-padding: 20px;
@@ -153,7 +153,7 @@
     display: flex;
     justify-content: flex-end;
     border-top: var(--border-in-light);
-    box-shadow: var(--shadow);
+    // box-shadow: var(--shadow);
 
     .modal-actions {
       display: flex;
@@ -249,6 +249,7 @@
 }
 
 .select-with-icon {
+  text-align-last: center; /* 使当前选中的文本居中 */
   position: relative;
   max-width: fit-content;
 
@@ -268,6 +269,11 @@
     background-color: var(--white);
     color: var(--black);
     text-align: center;
+
+    &.left-align {
+      text-align: left;
+    }
+
   }
 
   .select-with-icon-icon {
@@ -315,9 +321,9 @@
   }
 
   &-content {
-    min-width: 234px;
+    min-width: 224px;
     .list {
-      max-height: 90vh;
+      max-height: 96vh;
       overflow-x: hidden;
       overflow-y: auto;
 

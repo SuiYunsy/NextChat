@@ -38,5 +38,10 @@
     "authLocation": "header",
     "authHeader": "WebPilot-Friend-UID",
     "authToken": "6dee5600-208b-4c5a-877d-058279a5b93d"
+  },
+  {
+    "id": "grounding",
+    "name": "grounding",
+    "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/grounding/openapi.yaml"
   }
 ]

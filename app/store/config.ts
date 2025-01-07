@@ -64,18 +64,18 @@ export const DEFAULT_CONFIG = {
   models: DEFAULT_MODELS as any as LLMModel[],
 
   modelConfig: {
-    model: "gemini-1.5-flash" as ModelType,
+    model: "gemini-flash" as ModelType,
     providerName: "OpenAI" as ServiceProvider,
     temperature: 0.5,
-    top_p: 0.9,
-    max_tokens: 4096,
+    top_p: 1,
+    max_tokens: -1,
     presence_penalty: 0,
     frequency_penalty: 0,
     sendMemory: false,
     historyMessageCount: 8,
     compressMessageLengthThreshold: 2048,
-    compressModel: "gemini-1.5-flash",
-    compressProviderName: "OpenAI",
+    compressModel: "glm-4-flash",
+    compressProviderName: "ChatGLM",
     enableInjectSystemPrompts: true,
     template: config?.template ?? DEFAULT_INPUT_TEMPLATE,
     size: "1024x1024" as ModelSize,
@@ -145,7 +145,10 @@ export const ModalConfigValidator = {
     return x as ModelType;
   },
   max_tokens(x: number) {
-    return limitNumber(x, 0, 512000, 1024);
+    return limitNumber(x, -1, 32768, -1);
+  },
+  CompressThreshold(x: number) {
+    return limitNumber(x, 0, 32768, 1024);
   },
   presence_penalty(x: number) {
     return limitNumber(x, -2, 2, 0);

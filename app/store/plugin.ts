@@ -245,6 +245,16 @@ export const usePluginStore = createPersistStore(
               state.get(item.id)
                 ? item
                 : fetch(item.schema)
+                    .catch((e) => {
+                      const p = new URL(item.schema);
+                      return fetch(`/api/proxy/${p.pathname}?${p.search}`, {
+                        headers: {
+                          "X-Base-URL": p.origin,
+                        },
+                        referrerPolicy: "no-referrer",
+                        redirect: "follow",
+                      });
+                    })
                     .then((res) => res.text())
                     .then((content) => ({
                       ...item,

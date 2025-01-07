@@ -16,8 +16,8 @@ import {
   DEFAULT_SYSTEM_TEMPLATE,
   KnowledgeCutOffDate,
   StoreKey,
-  SUMMARIZE_MODEL,
-  GEMINI_SUMMARIZE_MODEL,
+  // SUMMARIZE_MODEL,
+  // GEMINI_SUMMARIZE_MODEL,
   ServiceProvider,
 } from "../constant";
 import Locale, { getLang } from "../locales";
@@ -26,8 +26,8 @@ import { prettyObject } from "../utils/format";
 import { createPersistStore } from "../utils/store";
 import { estimateTokenLength } from "../utils/token";
 import { ModelConfig, ModelType, useAppConfig } from "./config";
-import { useAccessStore } from "./access";
-import { collectModelsWithDefaultModel } from "../utils/model";
+// import { useAccessStore } from "./access";
+// import { collectModelsWithDefaultModel } from "../utils/model";
 import { createEmptyMask, Mask } from "./mask";
 
 const localStorage = safeLocalStorage();
@@ -109,6 +109,7 @@ function createEmptySession(): ChatSession {
   };
 }
 
+/* 
 function getSummarizeModel(
   currentModel: string,
   providerName: string,
@@ -137,6 +138,7 @@ function getSummarizeModel(
   }
   return [currentModel, providerName];
 }
+*/
 
 function countMessages(msgs: ChatMessage[]) {
   return msgs.reduce(
@@ -171,14 +173,24 @@ function fillTemplateWith(input: string, modelConfig: ModelConfig) {
   let output = modelConfig.template ?? DEFAULT_INPUT_TEMPLATE;
 
   // remove duplicate
-  if (input.startsWith(output)) {
-    output = "";
+  // if (input.startsWith(output)) {
+  //   output = "";
+  // }
+  const inputVar = "{{input}}";
+  const templateBeforeInput = output.split(inputVar)[0]; // 获取 {{input}} 之前的部分
+  if (input.startsWith(templateBeforeInput)) {
+    output = output.replace(templateBeforeInput, ""); // 移除模板中 {{input}} 之前的部分
+  }
+  const templateAfterInput = output.split(inputVar)[1]; // 获取 {{input}} 之后的部分
+  if (input.endsWith(templateAfterInput)) {
+    output = output.replace(templateAfterInput, ""); // 移除模板中 {{input}} 之后的部分
   }
 
   // must contains {{input}}
-  const inputVar = "{{input}}";
+  // const inputVar = "{{input}}";
   if (!output.includes(inputVar)) {
-    output += "\n" + inputVar;
+    // output += "\n" + inputVar;
+    output += inputVar;
   }
 
   Object.entries(vars).forEach(([name, value]) => {
@@ -207,19 +219,27 @@ export const useChatStore = createPersistStore(
 
     const methods = {
       forkSession() {
-        // 获取当前会话
+        // 获取当前对话
         const currentSession = get().currentSession();
         if (!currentSession) return;
 
         const newSession = createEmptySession();
 
         newSession.topic = currentSession.topic;
-        newSession.messages = [...currentSession.messages];
+        // 深拷贝消息
+        newSession.messages = currentSession.messages.map(msg => ({
+          ...msg,
+          id: nanoid(), // 生成新的消息 ID
+        }));
         newSession.mask = {
           ...currentSession.mask,
           modelConfig: {
             ...currentSession.mask.modelConfig,
           },
+          context: currentSession.mask.context.map((msg) => ({
+            ...msg,
+            id: nanoid(), // 为 mask 中的每个 msg 生成新的消息 ID
+          })),
         };
 
         set((state) => ({
@@ -497,6 +517,7 @@ export const useChatStore = createPersistStore(
       getMessagesWithMemory() {
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
+        const isR1 = ["r1","R1","reasoner"].some(str => modelConfig.model.includes(str));
         const clearContextIndex = session.clearContextIndex ?? 0;
         const messages = session.messages.slice();
         const totalMessageCount = session.messages.length;
@@ -510,6 +531,12 @@ export const useChatStore = createPersistStore(
           // (session.mask.modelConfig.model.startsWith("gpt-") ||
           //   session.mask.modelConfig.model.startsWith("chatgpt-"));
 
+        const R1_TEMPLATE =`In every output, response using the following format:
+<think>
+{reasoning_content}
+</think>
+
+{content}`
         var systemPrompts: ChatMessage[] = [];
         systemPrompts = shouldInjectSystemPrompts
           ? [
@@ -517,7 +544,7 @@ export const useChatStore = createPersistStore(
                 role: "system",
                 content: fillTemplateWith("", {
                   ...modelConfig,
-                  template: DEFAULT_SYSTEM_TEMPLATE,
+                  template: isR1 ? R1_TEMPLATE : DEFAULT_SYSTEM_TEMPLATE,
                 }),
               }),
             ]
@@ -613,12 +640,13 @@ export const useChatStore = createPersistStore(
         }
 
         // if not config compressModel, then using getSummarizeModel
-        const [model, providerName] = modelConfig.compressModel
-          ? [modelConfig.compressModel, modelConfig.compressProviderName]
-          : getSummarizeModel(
-              session.mask.modelConfig.model,
-              session.mask.modelConfig.providerName,
-            );
+        // const [model, providerName] = modelConfig.compressModel
+        //   ? [modelConfig.compressModel, modelConfig.compressProviderName]
+        //   : getSummarizeModel(
+        //       session.mask.modelConfig.model,
+        //       session.mask.modelConfig.providerName,
+        //     );
+        const [model, providerName] = [modelConfig.compressModel, modelConfig.compressProviderName]
         const api: ClientApi = getClientApi(providerName as ServiceProvider);
 
         // remove error messages if any

@@ -26,26 +26,26 @@ const cn = {
       "🥳 NextChat AI 首发优惠，立刻解锁 OpenAI o1, GPT-4o, Claude-3.5 等最新大模型",
   },
   ChatItem: {
-    ChatItemCount: (count: number) => `${count} 条对话`,
+    ChatItemCount: (count: number) => `${count} 条消息`,
   },
   Chat: {
-    SubTitle: (count: number) => `共 ${count} 条对话`,
+    SubTitle: (count: number) => `共 ${count} 条消息`,
     EditMessage: {
-      Title: "编辑消息记录",
+      Title: "编辑对话",
       Topic: {
-        Title: "聊天主题",
-        SubTitle: "更改当前聊天主题",
+        Title: "对话标题",
+        SubTitle: "更改当前对话标题",
       },
     },
     Actions: {
       ChatList: "查看消息列表",
-      CompressedHistory: "查看压缩后的历史 Prompt",
-      Export: "导出聊天记录",
+      CompressedHistory: "查看压缩后的历史消息摘要",
+      Export: "导出对话",
       Copy: "复制",
       Stop: "停止",
       Retry: "重试",
       Pin: "固定",
-      PinToastContent: "已将 1 条对话固定至预设提示词",
+      PinToastContent: "已将 1 条消息固定至预设提示词",
       PinToastAction: "查看",
       Delete: "删除",
       Edit: "编辑",
@@ -56,17 +56,17 @@ const cn = {
       StopSpeech: "停止",
     },
     Commands: {
-      new: "新建聊天",
-      newm: "从面具新建聊天",
-      next: "下一个聊天",
-      prev: "上一个聊天",
+      new: "新建对话",
+      newm: "从面具新建对话",
+      next: "下一个对话",
+      prev: "上一个对话",
       clear: "清除上下文",
-      fork: "复制聊天",
-      del: "删除聊天",
+      fork: "复制对话",
+      del: "删除对话",
     },
     InputActions: {
-      Stop: "停止响应",
-      ToBottom: "滚到最新",
+      Stop: "停止",
+      ToBottom: "置底",
       Theme: {
         auto: "自动主题",
         light: "亮色模式",
@@ -74,8 +74,8 @@ const cn = {
       },
       Prompt: "快捷指令",
       Masks: "所有面具",
-      Clear: "清除聊天",
-      Settings: "对话设置",
+      Clear: "分隔",
+      Settings: "设置",
       UploadImage: "上传图片",
     },
     Rename: "重命名对话",
@@ -97,7 +97,7 @@ const cn = {
     IsContext: "预设提示词",
     ShortcutKey: {
       Title: "键盘快捷方式",
-      newChat: "打开新聊天",
+      newChat: "打开新对话",
       focusInput: "聚焦输入框",
       copyLastMessage: "复制最后一个回复",
       copyLastCode: "复制最后一个代码块",
@@ -106,7 +106,7 @@ const cn = {
     },
   },
   Export: {
-    Title: "分享聊天记录",
+    Title: "导出对话",
     Copy: "全部复制",
     Download: "下载文件",
     Share: "分享到 ShareGPT",
@@ -114,7 +114,7 @@ const cn = {
     MessageFromChatGPT: "ChatGPT",
     Format: {
       Title: "导出格式",
-      SubTitle: "可以导出 Markdown 文本或者 PNG 图片",
+      SubTitle: "Markdown文本、PNG图片、JSON文件",
     },
     IncludeContext: {
       Title: "包含面具上下文",
@@ -140,19 +140,19 @@ const cn = {
     Clear: "清除选中",
   },
   Memory: {
-    Title: "历史摘要",
-    EmptyContent: "对话内容过短，无需总结",
-    Send: "自动压缩聊天记录并作为上下文发送",
+    Title: "历史消息摘要",
+    EmptyContent: "历史消息内容过短，暂无压缩后的摘要",
+    Send: "自动压缩历史消息生成摘要，并作为上下文发送",
     Copy: "复制摘要",
     Reset: "[unused]",
-    ResetConfirm: "确认清空历史摘要？",
+    ResetConfirm: "确认清空摘要？",
   },
   Home: {
-    NewChat: "新的聊天",
+    NewChat: "新对话",
     DeleteChat: "确认删除选中的对话？",
-    DeleteToast: "已删除会话",
+    DeleteToast: "已删除对话",
     Revert: "撤销",
-    Search: "搜索聊天",
+    Search: "搜索对话",
   },
   Settings: {
     Title: "设置",
@@ -168,9 +168,9 @@ const cn = {
       },
       Clear: {
         Title: "清除所有数据",
-        SubTitle: "清除所有聊天、设置数据",
+        SubTitle: "清除所有对话、设置数据",
         Action: "立即清除",
-        Confirm: "确认清除所有聊天、设置数据？",
+        Confirm: "确认清除所有对话、设置数据？",
       },
     },
     Lang: {
@@ -180,16 +180,16 @@ const cn = {
     Avatar: "头像",
     FontSize: {
       Title: "字体大小",
-      SubTitle: "聊天内容的字体大小",
+      SubTitle: "对话内容的字体大小",
     },
     FontFamily: {
-      Title: "聊天字体",
-      SubTitle: "聊天内容的字体，若置空则应用全局默认字体",
+      Title: "字体名称",
+      SubTitle: "对话内容的字体",
       Placeholder: "字体名称",
     },
     InjectSystemPrompts: {
       Title: "注入系统级提示信息",
-      SubTitle: "强制给每次请求的消息列表开头添加一个模拟 ChatGPT 的系统提示",
+      SubTitle: "你是一个大语言模型，当前模型、时间、latex格式分别是...",
     },
     InputTemplate: {
       Title: "用户输入预处理",
@@ -210,8 +210,8 @@ const cn = {
     Theme: "主题",
     TightBorder: "无边框模式",
     SendPreviewBubble: {
-      Title: "预览气泡",
-      SubTitle: "在预览气泡中预览 Markdown 内容",
+      Title: "输入时预览消息",
+      SubTitle: "在预览消息气泡中渲染 Markdown 内容",
     },
     AutoGenerateTitle: {
       Title: "自动生成标题",
@@ -256,14 +256,14 @@ const cn = {
 
       LocalState: "本地数据",
       Overview: (overview: any) => {
-        return `${overview.chat} 次对话，${overview.message} 条消息，${overview.prompt} 条提示词，${overview.mask} 个面具`;
+        return `${overview.chat} 条对话，${overview.message} 条消息，${overview.prompt} 条提示词，${overview.mask} 个面具`;
       },
       ImportFailed: "导入失败",
     },
     Mask: {
       Splash: {
         Title: "面具启动页",
-        SubTitle: "新建聊天时，展示面具启动页",
+        SubTitle: "新建对话时，展示面具启动页",
       },
       Builtin: {
         Title: "隐藏内置面具",
@@ -294,13 +294,13 @@ const cn = {
     },
     CompressThreshold: {
       Title: "历史消息长度压缩阈值",
-      SubTitle: "当未压缩的历史消息超过该值时，将进行压缩",
+      SubTitle: "当未压缩的历史消息内容长度超过该值时，将进行压缩并生成摘要",
     },
 
     Usage: {
       Title: "余额查询",
       SubTitle(used: any, total: any) {
-        return `本月已使用 $${used}，订阅总额 $${total}`;
+        return `已用 $${used} / 总额 $${total}`;
       },
       IsChecking: "正在检查…",
       Check: "重新检查",
@@ -522,14 +522,14 @@ const cn = {
       },
       CustomModel: {
         Title: "自定义模型名",
-        SubTitle: "增加自定义模型可选项，使用英文逗号隔开",
+        SubTitle: "增加自定义模型，使用英文逗号隔开",
       },
     },
 
     Model: "模型 (model)",
     CompressModel: {
-      Title: "对话摘要模型",
-      SubTitle: "用于压缩历史记录、生成对话标题的模型",
+      Title: "摘要模型",
+      SubTitle: "用于压缩历史消息、生成对话标题的模型",
     },
     Temperature: {
       Title: "随机性 (temperature)",
@@ -540,8 +540,8 @@ const cn = {
       SubTitle: "与随机性类似，但不要和随机性一起更改",
     },
     MaxTokens: {
-      Title: "单次回复限制 (max_tokens)",
-      SubTitle: "单次交互所用的最大 Token 数",
+      Title: "输出截断 (max_tokens)",
+      SubTitle: "值 -1 不发送此字段，值 1024 有望解决报错",
     },
     PresencePenalty: {
       Title: "话题新鲜度 (presence_penalty)",
@@ -573,8 +573,8 @@ const cn = {
     },
     Realtime: {
       Enable: {
-        Title: "实时聊天",
-        SubTitle: "开启实时聊天功能",
+        Title: "实时对话",
+        SubTitle: "开启实时对话功能",
       },
       Provider: {
         Title: "模型服务商",
@@ -606,11 +606,11 @@ const cn = {
     },
   },
   Store: {
-    DefaultTopic: "新的聊天",
+    DefaultTopic: "新对话",
     BotHello: "[**面具**🎭](/#/masks) | [**插件**🧩](/#/plugins) | **[S.D.🎨](/#/sd)** | [**搜索**🔍](/#/search-chat) | **Ctrl+/**",
     Error: "出错了，稍后重试吧",
     Prompt: {
-      History: (content: string) => "这是历史聊天总结作为前情提要：" + content,
+      History: (content: string) => "这是历史对话总结作为前情提要：" + content,
       Topic:
         "使用四到五个字直接返回这句话的简要主题，不要解释、不要标点、不要语气词、不要多余文本，不要加粗，如果没有主题，请直接返回“闲聊”",
       Summarize:
@@ -628,7 +628,7 @@ const cn = {
   Context: {
     Toast: (x: any) => `包含 ${x} 条预设提示词`,
     Edit: "当前对话设置",
-    Add: "新增一条对话",
+    Add: "新增一条消息",
     Clear: "上下文已清除",
     Revert: "恢复上下文",
   },
@@ -639,9 +639,9 @@ const cn = {
     Sysmessage: "你是一个助手",
   },
   SearchChat: {
-    Name: "搜索聊天记录",
+    Name: "搜索对话",
     Page: {
-      Title: "搜索聊天记录",
+      Title: "搜索对话",
       Search: "输入搜索关键词",
       NoResult: "没有找到结果",
       NoData: "没有数据",
@@ -654,7 +654,7 @@ const cn = {
     },
   },
   Plugin: {
-    Name: "插件选择",
+    Name: "插件",
     Page: {
       Title: "插件",
       SubTitle: (count: number) => `${count} 个插件`,
@@ -702,7 +702,7 @@ const cn = {
       Create: "新建",
     },
     Item: {
-      Info: (count: number) => `包含 ${count} 条预设对话`,
+      Info: (count: number) => `包含 ${count} 条预设消息`,
       Chat: "对话",
       View: "查看",
       Edit: "编辑",
@@ -711,7 +711,7 @@ const cn = {
     },
     EditModal: {
       Title: (readonly: boolean) =>
-        `编辑预设面具 ${readonly ? "（只读）" : ""}`,
+        `编辑预设面具${readonly ? "（只读）" : ""}`,
       Download: "下载预设",
       Clone: "克隆预设",
     },
@@ -724,8 +724,8 @@ const cn = {
         Confirm: "当前对话的自定义设置将会被自动覆盖，确认启用全局设置？",
       },
       HideContext: {
-        Title: "隐藏预设对话",
-        SubTitle: "隐藏后预设对话不会出现在聊天界面",
+        Title: "隐藏预设消息",
+        SubTitle: "隐藏后预设消息不会出现在对话界面",
       },
       Artifacts: {
         Title: "启用Artifacts",
@@ -733,7 +733,7 @@ const cn = {
       },
       CodeFold: {
         Title: "启用代码折叠",
-        SubTitle: "启用之后可以自动折叠/展开过长的代码块",
+        SubTitle: "启用之后可以自动折叠过长的代码块",
       },
       Share: {
         Title: "分享此面具",
@@ -774,7 +774,7 @@ const cn = {
     },
     Model: "模型",
     Messages: "消息",
-    Topic: "主题",
+    Topic: "标题",
     Time: "时间",
   },
   SdPanel: {

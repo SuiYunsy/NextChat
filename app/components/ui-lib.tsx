@@ -306,13 +306,18 @@ export function Select(
     <div
       className={clsx(
         styles["select-with-icon"],
-        {
-          [styles["left-align-option"]]: align === "left",
-        },
+        // {
+        //   [styles["left-align-option"]]: align === "left",
+        // },
         className,
       )}
     >
-      <select className={styles["select-with-icon-select"]} {...otherProps}>
+      <select className={clsx(
+        styles["select-with-icon-select"],
+        {
+          [styles["left-align"]]: align === "left",
+        },
+      )} {...otherProps}>
         {children}
       </select>
       <DownIcon className={styles["select-with-icon-icon"]} />
