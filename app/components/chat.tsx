@@ -104,7 +104,7 @@ import {
   ModelProvider,
   Path,
   REQUEST_TIMEOUT_MS,
-  UNFINISHED_INPUT,
+  // UNFINISHED_INPUT,
   ServiceProvider,
 } from "../constant";
 import { Avatar } from "./emoji";
@@ -1515,7 +1515,8 @@ function _Chat() {
   // remember unfinished input
   useEffect(() => {
     // try to load from local storage
-    const key = UNFINISHED_INPUT(session.id);
+    // const key = UNFINISHED_INPUT(session.id);
+    const key = "unfinished-input-onlyone";
     const mayBeUnfinishedInput = localStorage.getItem(key);
     if (mayBeUnfinishedInput && userInput.length === 0) {
       setUserInput(mayBeUnfinishedInput);
@@ -1702,7 +1703,7 @@ function _Chat() {
   useEffect(() => {
     setTimeout(() => { // 渲染完成后，延时滚动到底部
       scrollToBottom();
-    }, 1);
+    }, 50);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 空依赖数组，表示只在组件挂载时执行
 

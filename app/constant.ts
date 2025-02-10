@@ -1,5 +1,5 @@
 export const OWNER = "SuiYunsy";
-export const REPO = "ChatGPT-Next-Web";
+export const REPO = "NextChat";
 export const REPO_URL = `https://github.com/${OWNER}/${REPO}`;
 export const PLUGINS_REPO_URL = `https://github.com/${OWNER}/NextChat-Awesome-Plugins`;
 export const ISSUE_URL = `https://github.com/${OWNER}/${REPO}/issues`;
@@ -104,7 +104,7 @@ export const UNFINISHED_INPUT = (id: string) => "unfinished-input-" + id;
 
 export const STORAGE_KEY = "chatgpt-next-web";
 
-export const REQUEST_TIMEOUT_MS = 60000;
+export const REQUEST_TIMEOUT_MS = 90000;
 
 export const EXPORT_MESSAGE_CLASS_NAME = "export-markdown";
 
@@ -278,8 +278,14 @@ export const KnowledgeCutOffDate: Record<string, string> = {
   "gpt-4o-mini": "2023-10",
   "gpt-4o-mini-2024-07-18": "2023-10",
   "gpt-4-vision-preview": "2023-04",
+  "o1-mini-2024-09-12": "2023-10",
   "o1-mini": "2023-10",
+  "o1-preview-2024-09-12": "2023-10",
   "o1-preview": "2023-10",
+  "o1-2024-12-17": "2023-10",
+  o1: "2023-10",
+  "o3-mini-2025-01-31": "2023-10",
+  "o3-mini": "2023-10",
   // After improvements,
   // it's now easier to add "KnowledgeCutOffDate" instead of stupid hardcoding it, as was done previously.
   "gemini-pro": "2023-12",
@@ -344,8 +350,14 @@ const googleModels = [
   "gemini-exp-1114",
   "gemini-exp-1121",
   "gemini-exp-1206",
+  "gemini-2.0-flash",
   "gemini-2.0-flash-exp",
+  "gemini-2.0-flash-lite-preview-02-05",
+  "gemini-2.0-flash-thinking-exp",
   "gemini-2.0-flash-thinking-exp-1219",
+  "gemini-2.0-flash-thinking-exp-01-21",
+  "gemini-2.0-pro-exp",
+  "gemini-2.0-pro-exp-02-05",
 ];
 
 const anthropicModels = [
@@ -416,7 +428,7 @@ const iflytekModels = [
   "4.0Ultra",
 ];
 
-const deepseekModels = ["deepseek-chat", "deepseek-coder"];
+const deepseekModels = ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"];
 
 const xAIModes = ["grok-beta"];
 */

@@ -1,0 +1,26 @@
+<svg width="44" height="44" viewBox="0 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(15, 15) scale(0.917)">
+    <circle cx="180" cy="180" r="180" fill="#315EF8"/>
+    <g>
+      <g>
+        <rect x="235.508" y="83.212" width="77.099" height="173.079" rx="38.55" transform="rotate(21.987 235.508 83.212)" fill="url(#logo_svg__e)"/>
+      </g>
+      <g>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M102.234 136.443c.015-.587-1.004-.812-1.204-.261l-29.164 80.126c-7.281 20.007 3.034 42.128 23.04 49.41 20.007 7.282 42.128-3.034 49.41-23.04a57.396 57.396 0 0 0-12.924-59.786l-18.193-18.581a38.453 38.453 0 0 1-10.965-27.868Z" fill="url(#logo_svg__g)"/>
+      </g>
+      <g>
+        <path d="M249.598 195.489a38.857 38.857 0 0 1 10.652 28.746c-1.729 34.097-43.435 49.55-66.963 24.812l-80.228-84.353a38.856 38.856 0 0 1-10.651-28.746c1.728-34.096 43.434-49.55 66.963-24.812l80.227 84.353Z" fill="#fff" fill-opacity="0.85"/>
+      </g>
+    </g>
+  </g>
+  <defs>
+    <linearGradient id="logo_svg__e" x1="289.153" y1="98.392" x2="200.569" y2="280.117" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.62"/>
+    </linearGradient>
+    <linearGradient id="logo_svg__g" x1="106.933" y1="134.422" x2="109.673" y2="254.984" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+  </defs>
+</svg>

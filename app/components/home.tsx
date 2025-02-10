@@ -5,7 +5,7 @@ require("../polyfill");
 import { useState, useEffect } from "react";
 import styles from "./home.module.scss";
 
-import BotIcon from "../icons/bot.svg";
+import NextChatIcon from "../icons/nextchat.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 
 import { getCSSVar, useMobileScreen } from "../utils";
@@ -33,45 +33,55 @@ import clsx from "clsx";
 export function Loading(props: { noLogo?: boolean }) {
   return (
     <div className={clsx("no-dark", styles["loading-content"])}>
-      {!props.noLogo && <BotIcon />}
+      {!props.noLogo && <NextChatIcon />}
       <LoadingIcon />
     </div>
   );
 }
 
 const Artifacts = dynamic(async () => (await import("./artifacts")).Artifacts, {
-  loading: () => <Loading noLogo />,
+  loading: () => <Loading />,
 });
 
 const Settings = dynamic(async () => (await import("./settings")).Settings, {
-  loading: () => <Loading noLogo />,
+  loading: () => <Loading />,
 });
 
-const Chat = dynamic(async () => (await import("./chat")).Chat, {
-  loading: () => <Loading noLogo />,
+// const Chat = dynamic(async () => (await import("./chat")).Chat, {
+//   loading: () => <Loading />,
+// });
+// import { Chat } from "./chat";
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const Chat = dynamic(async () => {
+  await delay(50);
+  const mod = await import("./chat");
+  return mod.Chat;
+}, {
+  loading: () => <Loading />,
 });
 
 const NewChat = dynamic(async () => (await import("./new-chat")).NewChat, {
-  loading: () => <Loading noLogo />,
+  loading: () => <Loading />,
 });
 
 const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
-  loading: () => <Loading noLogo />,
+  loading: () => <Loading />,
 });
 
 const PluginPage = dynamic(async () => (await import("./plugin")).PluginPage, {
-  loading: () => <Loading noLogo />,
+  loading: () => <Loading />,
 });
 
 const SearchChat = dynamic(
   async () => (await import("./search-chat")).SearchChatPage,
   {
-    loading: () => <Loading noLogo />,
+    loading: () => <Loading />,
   },
 );
 
 const Sd = dynamic(async () => (await import("./sd")).Sd, {
-  loading: () => <Loading noLogo />,
+  loading: () => <Loading />,
 });
 
 export function useSwitchTheme() {

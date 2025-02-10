@@ -41,7 +41,7 @@
   min-height: 40px;
   border-bottom: var(--border-in-light);
   padding: 10px 20px;
-  animation: slide-in ease 0.6s;
+  // animation: slide-in ease 0.6s;
 
   .list-header {
     display: flex;
@@ -95,7 +95,7 @@
   border-radius: 12px;
   width: 80vw;
   max-width: 900px;
-  min-width: 224px;
+  min-width: 234px;
   animation: slide-in ease 0.3s;
 
   --modal-padding: 20px;
@@ -321,7 +321,7 @@
   }
 
   &-content {
-    min-width: 224px;
+    min-width: 234px;
     .list {
       max-height: 96vh;
       overflow-x: hidden;
