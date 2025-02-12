@@ -4,7 +4,10 @@ import RemarkMath from "remark-math";
 import RemarkBreaks from "remark-breaks";
 import RehypeKatex from "rehype-katex";
 import RemarkGfm from "remark-gfm";
+import RehypeRaw from "rehype-raw";
 import RehypeHighlight from "rehype-highlight";
+import rehypeSanitize from "rehype-sanitize";
+import { defaultSchema } from "rehype-sanitize";
 import { useRef, useState, RefObject, useEffect, useMemo } from "react";
 import { copyToClipboard, useWindowSize } from "../utils";
 import mermaid from "mermaid";
@@ -24,6 +27,128 @@ import { IconButton } from "./button";
 
 import { useAppConfig } from "../store/config";
 import clsx from "clsx";
+
+import { Collapse } from "antd";
+import styled from "styled-components";
+const { Panel } = Collapse;
+
+interface ThinkCollapseProps {
+  title: string | React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+  fontSize?: number;
+}
+const ThinkCollapse = styled(
+  ({ title, children, className, fontSize }: ThinkCollapseProps) => {
+    // 如果是 Thinking 状态，默认展开，否则折叠
+    const defaultActive = title === "思考中💭" ? ["1"] : [];
+    // 如果是 NoThink 状态，禁用
+    const disabled = title === "思考失败❌";
+    const [activeKeys, setActiveKeys] = useState(defaultActive);
+
+    // 当标题从 Thinking 变为 Think 时自动折叠
+    useEffect(() => {
+      if (title === "思考完成💤" || title === "思考失败❌") {
+        setActiveKeys([]);
+      } else if (title === "思考中💭") {
+        setActiveKeys(["1"]);
+      }
+    }, [title]);
+
+    return (
+      <Collapse
+        className={`${className} ${disabled ? "disabled" : ""}`}
+        size="small"
+        activeKey={activeKeys}
+        onChange={(keys) => !disabled && setActiveKeys(keys as string[])}
+        bordered={false}
+      >
+        <Panel header={title} key="1">
+          {children}
+        </Panel>
+      </Collapse>
+    );
+  },
+)<{ fontSize?: number }>`
+  .ant-collapse-item {
+    border: var(--border-in-light) !important;
+    border-radius: 10px !important;
+    background-color: var(--white) !important;
+    margin-bottom: 6px !important;
+  }
+  .ant-collapse-header {
+    color: var(--black) !important;
+    font-weight: bold !important;
+    font-size: ${(props) => props.fontSize ?? 14}px !important;
+    padding: 6px 12px !important;
+    align-items: center !important;
+    transition: all 0.3s ease !important;
+    .ant-collapse-expand-icon {
+      color: var(--primary) !important;
+    }
+  }
+  .ant-collapse-content {
+    background-color: transparent !important;
+    border-top: 1px solid var(--border-in-light) !important;
+    .ant-collapse-content-box {
+      padding: 6px 12px 4px !important;
+      font-size: ${(props) => props.fontSize ?? 14}px;
+      color: var(--black);
+      opacity: 0.9;
+    }
+  }
+
+  &.disabled {
+    opacity: 0.9;
+    pointer-events: none;
+    .ant-collapse-item {
+      border: none !important;
+      background-color: transparent !important;
+    }
+    .ant-collapse-header {
+      padding: 6px 0px !important;
+    }
+  }
+`;
+
+// 配置安全策略，允许 thinkcollapse 标签，防止html注入造成页面崩溃
+const sanitizeOptions = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    div: [
+      ...(defaultSchema.attributes?.div || []),
+      ["className", "math", "math-display"],
+    ],
+    math: [["xmlns", "http://www.w3.org/1998/Math/MathML"], "display"],
+    annotation: ["encoding"],
+    span: ["className", "style"],
+    svg: [
+      ["xmlns", "http://www.w3.org/2000/svg"],
+      "width",
+      "height",
+      "viewBox",
+      "preserveAspectRatio",
+    ],
+    path: ["d"],
+  },
+  tagNames: [
+    ...(defaultSchema.tagNames || []),
+    "thinkcollapse",
+    "math",
+    "semantics",
+    "annotation",
+    "mrow",
+    "mi",
+    "mo",
+    "mfrac",
+    "mn",
+    "msup",
+    "msub",
+    "svg",
+    "path",
+  ],
+};
 
 export function Mermaid(props: { code: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -246,6 +371,34 @@ function escapeBrackets(text: string) {
   );
 }
 
+function formatBoldText(text: string) {
+  const pattern = /\*\*(.*?)([:：])\*\*/g;
+  return text.replace(pattern, (match, boldText, colon) => {
+    return `**${boldText}**${colon}`;
+  });
+}
+
+function formatThinkText(text: string): string {
+  // 检查是否以 <think> 开头但没有结束标签
+  if (text.startsWith("<think>") && !text.includes("</think>")) {
+    // 获取 <think> 后的所有内容
+    const thinkContent = text.slice("<think>".length);
+    // 渲染为"思考中"状态
+    return `<thinkcollapse title="思考中💭">\n${thinkContent}\n</thinkcollapse>`;
+  }
+
+  // 处理完整的 think 标签
+  const pattern = /^<think>([\s\S]*?)<\/think>/;
+  return text.replace(pattern, (match, thinkContent) => {
+    // 渲染为"思考完成"状态
+    // 如果 thinkContent 为空，则渲染为"没有思考过程"状态
+    if (thinkContent.trim() === "") {
+      return `<thinkcollapse title="思考失败❌">\n</thinkcollapse>`;
+    }
+    return `<thinkcollapse title="思考完成💤">\n${thinkContent}\n</thinkcollapse>`;
+  });
+}
+
 function tryWrapHtmlCode(text: string) {
   // try add wrap html code (fixed: html codeblock include 2 newline)
   // ignore embed codeblock
@@ -267,16 +420,27 @@ function tryWrapHtmlCode(text: string) {
     );
 }
 
-function _MarkDownContent(props: { content: string }) {
+// function _MarkDownContent(props: { content: string }) {
+//   const escapedContent = useMemo(() => {
+//     return tryWrapHtmlCode(escapeBrackets(props.content));
+//   }, [props.content]);
+
+function R_MarkDownContent(props: { content: string; fontSize?: number }) {
   const escapedContent = useMemo(() => {
-    return tryWrapHtmlCode(escapeBrackets(props.content));
+    return tryWrapHtmlCode(
+      formatThinkText(
+        formatBoldText(escapeBrackets(props.content)),
+      ),
+    );
   }, [props.content]);
 
   return (
     <ReactMarkdown
       remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
       rehypePlugins={[
+        RehypeRaw,
         RehypeKatex,
+        [rehypeSanitize, sanitizeOptions],
         [
           RehypeHighlight,
           {
@@ -288,8 +452,19 @@ function _MarkDownContent(props: { content: string }) {
       components={{
         pre: PreCode,
         code: CustomCode,
-        p: (pProps) => <p {...pProps} dir="auto" />,
-        a: (aProps) => {
+        p: (pProps: any) => <p {...pProps} dir="auto" />,
+        thinkcollapse: ({
+          title,
+          children,
+        }: {
+          title: string;
+          children: React.ReactNode;
+        }) => (
+          <ThinkCollapse title={title} fontSize={props.fontSize}>
+            {children}
+          </ThinkCollapse>
+        ),
+        a: (aProps: any) => {
           const href = aProps.href || "";
           if (/\.(aac|mp3|opus|wav)$/.test(href)) {
             return (
@@ -309,14 +484,14 @@ function _MarkDownContent(props: { content: string }) {
           const target = isInternal ? "_self" : aProps.target ?? "_blank";
           return <a {...aProps} target={target} />;
         },
-      }}
+      } as any }
     >
       {escapedContent}
     </ReactMarkdown>
   );
 }
 
-export const MarkdownContent = React.memo(_MarkDownContent);
+export const MarkdownContent = React.memo(R_MarkDownContent);
 
 export function Markdown(
   props: {
@@ -345,7 +520,7 @@ export function Markdown(
       {props.loading ? (
         <LoadingIcon />
       ) : (
-        <MarkdownContent content={props.content} />
+        <MarkdownContent content={props.content} fontSize={props.fontSize} />
       )}
     </div>
   );

@@ -394,7 +394,7 @@ export function ContextPrompts(props: {
                           onClick={() => {
                             addContextPrompt(
                               createMessage({
-                                role: "user",
+                                role: "assistant",
                                 content: "",
                                 date: new Date().toLocaleString(),
                               }),
@@ -424,7 +424,7 @@ export function ContextPrompts(props: {
               onClick={() =>
                 addContextPrompt(
                   createMessage({
-                    role: "user",
+                    role: "assistant",
                     content: "",
                     date: "",
                   }),

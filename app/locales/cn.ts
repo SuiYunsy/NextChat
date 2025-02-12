@@ -702,7 +702,7 @@ const cn = {
       Create: "新建",
     },
     Item: {
-      Info: (count: number) => `包含 ${count} 条预设消息`,
+      Info: (count: number) => `${count} 条预设`,
       Chat: "对话",
       View: "查看",
       Edit: "编辑",

@@ -158,14 +158,14 @@
   .context-prompt-insert {
     display: flex;
     justify-content: center;
-    padding: 4px;
+    padding: 6px;
     opacity: 0.2;
     transition: all ease 0.3s;
     background-color: rgba(0, 0, 0, 0);
     cursor: pointer;
     border-radius: 4px;
-    margin-top: 4px;
-    margin-bottom: 4px;
+    margin: 2px auto;
+    // max-width: 60%;
 
     &:hover {
       opacity: 1;
@@ -774,5 +774,20 @@
     &-show {
       transform: translateX(0);
     }
+  }
+}
+
+.token-counter {
+  position: absolute;
+  right: 28px;
+  bottom: 62px;
+  font-size: 12px;
+  color: #808080;
+  z-index: 1;
+}
+@media only screen and (max-width: 600px) {
+  .token-counter {
+    right: 28px;
+    bottom: 56px;
   }
 }

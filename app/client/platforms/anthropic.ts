@@ -101,7 +101,7 @@ export class ClaudeApi implements LLMApi {
     // try get base64image from local cache image_url
     const messages: ChatOptions["messages"] = [];
     for (const v of options.messages) {
-      const content = await preProcessImageContent(v.content);
+      const content = await preProcessImageContent(v);
       messages.push({ role: v.role, content });
     }
 
