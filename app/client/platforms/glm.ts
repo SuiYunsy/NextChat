@@ -142,7 +142,7 @@ export class ChatGLMApi implements LLMApi {
       baseUrl = "https://" + baseUrl;
     }
 
-    console.log("[Proxy Endpoint] ", baseUrl, path);
+    console.log("[Proxy Endpoint]", baseUrl, path);
     return [baseUrl, path].join("/");
   }
 
@@ -159,7 +159,7 @@ export class ChatGLMApi implements LLMApi {
     const messages: ChatOptions["messages"] = [];
     for (const v of options.messages) {
       const content = visionModel
-        ? await preProcessImageContent(v.content)
+        ? await preProcessImageContent(v)
         : getMessageTextContent(v);
       messages.push({ role: v.role, content });
     }
@@ -176,7 +176,7 @@ export class ChatGLMApi implements LLMApi {
     const requestPayload = this.createPayload(messages, modelConfig, options);
     const path = this.path(this.getModelPath(modelType));
 
-    console.log(`[Request] glm ${modelType} payload: `, requestPayload);
+    console.log(`[Request] glm ${modelType} payload:`, requestPayload);
 
     const controller = new AbortController();
     options.onController?.(controller);

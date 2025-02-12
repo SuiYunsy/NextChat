@@ -95,7 +95,7 @@
   border-radius: 12px;
   width: 80vw;
   max-width: 900px;
-  min-width: 234px;
+  min-width: 233px;
   animation: slide-in ease 0.3s;
 
   --modal-padding: 20px;
@@ -321,8 +321,15 @@
   }
 
   &-content {
-    min-width: 234px;
+    min-width: 233px;
+    @media screen and (min-width: 600px) {
+      min-width: 699px;
+    }
     .list {
+      @media screen and (min-width: 600px) {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
       max-height: 96vh;
       overflow-x: hidden;
       overflow-y: auto;

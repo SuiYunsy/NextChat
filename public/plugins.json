@@ -18,11 +18,6 @@
     "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/codeinterpreterapi/openapi.json"
   },
   {
-    "id": "duckduckgolite",
-    "name": "duckduckgolite",
-    "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/duckduckgolite/openapi.json"
-  },
-  {
     "id": "gapier",
     "name": "gapier",
     "schema": "https://raw.githubusercontent.com/SuiYunsy/NextChat-Awesome-Plugins/main/plugins/gapier/openapi.json",

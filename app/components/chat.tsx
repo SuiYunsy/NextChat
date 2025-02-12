@@ -131,6 +131,10 @@ export const SessionConfigModelWithMask = withModalMask(SessionConfigModel);
 export const EditMessageModalWithMask = withModalMask(EditMessageModal);
 export const ShortcutKeyModalWithMask = withModalMask(ShortcutKeyModal);
 
+// import { estimateTokenLength } from "../utils/token";
+import { countTokens } from 'gpt-tokenizer/esm/encoding/o200k_base';
+import { countMessages } from "../store/chat";
+
 const localStorage = safeLocalStorage();
 
 const ttsPlayer = createTTSPlayer();
@@ -994,7 +998,7 @@ export function ShortcutKeyModal(props: { onClose: () => void }) {
   );
 }
 
-function _Chat() {
+function R_Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
@@ -1189,7 +1193,7 @@ function _Chat() {
 
       // auto sync mask config from global config
       if (session.mask.syncGlobalConfig) {
-        console.log("[Mask] syncing from global, name = ", session.mask.name);
+        console.log("[Mask] syncing from global, name =", session.mask.name);
         session.mask.modelConfig = { ...config.modelConfig };
       }
     });
@@ -2151,6 +2155,9 @@ function _Chat() {
                     })}
                   </div>
                 )}
+                <div className={styles["token-counter"]}>
+                  {`${countTokens(userInput)}+${countMessages(session.messages.filter((msg) => !msg.isError).slice(session.clearContextIndex ?? 0))}`}
+                </div>
                 <IconButton
                   icon={<SendWhiteIcon />}
                   text={Locale.Chat.Send}
@@ -2200,5 +2207,5 @@ function _Chat() {
 export function Chat() {
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
-  return <_Chat key={session.id}></_Chat>;
+  return <R_Chat key={session.id}></R_Chat>;
 }

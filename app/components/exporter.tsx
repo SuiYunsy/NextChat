@@ -33,14 +33,15 @@ import dynamic from "next/dynamic";
 // import NextImage from "next/image";
 
 import { toBlob, toPng } from "html-to-image";
-import { DEFAULT_MASK_AVATAR } from "../store/mask";
 
 import { prettyObject } from "../utils/format";
 import { EXPORT_MESSAGE_CLASS_NAME } from "../constant";
 import { getClientConfig } from "../config/client";
 import { type ClientApi, getClientApi } from "../client/api";
 import { getMessageTextContent } from "../utils";
+import { MaskAvatar } from "./mask";
 import clsx from "clsx";
+import { countMessages } from "../store/chat";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -444,7 +445,7 @@ export function ImagePreviewer(props: {
             refreshPreview();
           });
       } catch (e) {
-        console.error("[Copy Image] ", e);
+        console.error("[Copy Image]", e);
         showToast(Locale.Copy.Failed);
       }
     });
@@ -456,6 +457,9 @@ export function ImagePreviewer(props: {
     showToast(Locale.Export.Image.Toast);
     const dom = previewRef.current;
     if (!dom) return;
+
+    const originalWidth = dom.style.width; // 保存原始宽度
+    if (isMobile) dom.style.width = '150%'; // 修改宽度
 
     const isApp = getClientConfig()?.isApp;
 
@@ -500,6 +504,8 @@ export function ImagePreviewer(props: {
       }
     } catch (error) {
       showToast(Locale.Download.Failed);
+    } finally { // 无论成功与否，都要恢复原始宽度
+      dom.style.width = originalWidth;
     }
   };
 
@@ -535,22 +541,21 @@ export function ImagePreviewer(props: {
             <div className={styles["icons"]}>
               <Avatar avatar={config.avatar} />
               <span className={styles["icon-space"]}>&</span>
-              {mask.avatar === DEFAULT_MASK_AVATAR ? (
-                <Avatar model={mask.modelConfig.model} />
-              ) : (
-                <Avatar avatar={mask.avatar} />
-              )}
+              <MaskAvatar
+                avatar={mask.avatar}
+                model={session.mask.modelConfig.model}
+              />
             </div>
           </div>
           <div>
             <div className={styles["chat-info-item"]}>
+              {Locale.Exporter.Topic}: {session.topic}
+            </div>
+            <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Model}: {mask.modelConfig.model}
             </div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Messages}: {props.messages.length}
-            </div>
-            <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Topic}: {session.topic}
+              {Locale.Exporter.Messages}: {props.messages.length} | {countMessages(props.messages)}
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Time}:{" "}
@@ -569,10 +574,11 @@ export function ImagePreviewer(props: {
               <div className={styles["avatar"]}>
                 {m.role === "user" ? (
                   <Avatar avatar={config.avatar} />
-                ) : mask.avatar === DEFAULT_MASK_AVATAR ? (
-                  <Avatar model={m.model} />
                 ) : (
-                  <Avatar avatar={mask.avatar} />
+                  <MaskAvatar
+                    avatar={session.mask.avatar}
+                    model={m.model || session.mask.modelConfig.model}
+                  />
                 )}
               </div>
 

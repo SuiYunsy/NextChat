@@ -1,4 +1,4 @@
-import { getMessageTextContent, trimTopic } from "../utils";
+import { getMessageTextContent, trimTopic, getMessageTextContentWithoutThinking } from "../utils";
 
 import { indexedDBStorage } from "@/app/utils/indexedDB-storage";
 import { nanoid } from "nanoid";
@@ -24,11 +24,14 @@ import Locale, { getLang } from "../locales";
 import { isDalle3, safeLocalStorage } from "../utils";
 import { prettyObject } from "../utils/format";
 import { createPersistStore } from "../utils/store";
-import { estimateTokenLength } from "../utils/token";
+// import { estimateTokenLength } from "../utils/token";
+import { countTokens } from 'gpt-tokenizer/esm/encoding/o200k_base';
 import { ModelConfig, ModelType, useAppConfig } from "./config";
 // import { useAccessStore } from "./access";
 // import { collectModelsWithDefaultModel } from "../utils/model";
 import { createEmptyMask, Mask } from "./mask";
+
+import { getMessageTextContentWithoutThinkingFromContent } from "@/app/utils";
 
 const localStorage = safeLocalStorage();
 
@@ -140,9 +143,9 @@ function getSummarizeModel(
 }
 */
 
-function countMessages(msgs: ChatMessage[]) {
+export function countMessages(msgs: ChatMessage[]) {
   return msgs.reduce(
-    (pre, cur) => pre + estimateTokenLength(getMessageTextContent(cur)),
+    (pre, cur) => pre + countTokens(getMessageTextContentWithoutThinkingFromContent(getMessageTextContent(cur))),
     0,
   );
 }
@@ -387,7 +390,7 @@ export const useChatStore = createPersistStore(
         const modelConfig = session.mask.modelConfig;
 
         const userContent = fillTemplateWith(content, modelConfig);
-        console.log("[User Input] after template: ", userContent);
+        console.log("[User Input] after template:", userContent);
 
         let mContent: string | MultimodalContent[] = userContent;
 
@@ -551,7 +554,7 @@ export const useChatStore = createPersistStore(
           : [];
         if (shouldInjectSystemPrompts) {
           console.log(
-            "[Global System Prompt] ",
+            "[Global System Prompt]",
             systemPrompts.at(0)?.content ?? "empty",
           );
         }
@@ -674,7 +677,14 @@ export const useChatStore = createPersistStore(
                 role: "user",
                 content: Locale.Store.Prompt.Topic,
               }),
-            );
+            )
+            .map((v) => ({
+              ...v,
+              content:
+                v.role === "assistant"
+                  ? getMessageTextContentWithoutThinking(v)
+                  : getMessageTextContent(v),
+            }));
           api.llm.chat({
             messages: topicMessages,
             config: {
@@ -719,7 +729,7 @@ export const useChatStore = createPersistStore(
         const lastSummarizeIndex = session.messages.length;
 
         console.log(
-          "[Chat History] ",
+          "[Chat History]",
           toBeSummarizedMsgs,
           historyMsgLength,
           modelConfig.compressMessageLengthThreshold,
@@ -736,11 +746,18 @@ export const useChatStore = createPersistStore(
           api.llm.chat({
             messages: toBeSummarizedMsgs.concat(
               createMessage({
-                role: "system",
+                role: "user",
                 content: Locale.Store.Prompt.Summarize,
                 date: "",
               }),
-            ),
+            )
+            .map((v) => ({
+              ...v,
+              content:
+                v.role === "assistant"
+                  ? getMessageTextContentWithoutThinking(v)
+                  : getMessageTextContent(v),
+            })),
             config: {
               ...modelcfg,
               stream: true,

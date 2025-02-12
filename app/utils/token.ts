@@ -14,9 +14,9 @@ export function estimateTokenLength(input: string): number {
       }
     } else {
       // Unicode character
-      tokenLength += 1.5;
+      tokenLength += 1;
     }
   }
 
-  return tokenLength;
+  return Math.round(tokenLength);
 }

@@ -6,14 +6,14 @@ self.addEventListener("activate", function (event) {
   console.log("ServiceWorker activated.");
 });
 
-self.addEventListener("install", function (event) {
-  self.skipWaiting();  // enable new version
-  event.waitUntil(
-    caches.open(CHATGPT_NEXT_WEB_CACHE).then(function (cache) {
-      return cache.addAll([]);
-    }),
-  );
-});
+// self.addEventListener("install", function (event) {
+//   self.skipWaiting();  // enable new version
+//   event.waitUntil(
+//     caches.open(CHATGPT_NEXT_WEB_CACHE).then(function (cache) {
+//       return cache.addAll([]);
+//     }),
+//   );
+// });
 
 function jsonify(data) {
   return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } })

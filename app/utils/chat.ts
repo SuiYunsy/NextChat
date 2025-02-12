@@ -11,6 +11,7 @@ import {
 } from "@fortaine/fetch-event-source";
 import { prettyObject } from "./format";
 import { fetch as tauriFetch } from "./stream";
+import { getMessageTextContentWithoutThinkingFromContent } from "@/app/utils";
 
 export function compressImage(file: Blob, maxSize: number): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -71,10 +72,14 @@ export function compressImage(file: Blob, maxSize: number): Promise<string> {
 }
 
 export async function preProcessImageContent(
-  content: RequestMessage["content"],
+  message: RequestMessage,
+  // content: RequestMessage["content"],
 ) {
+  const content = message.content;
   if (typeof content === "string") {
-    return content;
+    return message.role == "assistant"
+      ? getMessageTextContentWithoutThinkingFromContent(content)
+      : content;
   }
   const result = [];
   for (const part of content) {
@@ -85,6 +90,12 @@ export async function preProcessImageContent(
       } catch (error) {
         console.error("Error processing image URL:", error);
       }
+    } else if (part?.type === "text" && part?.text) {
+      const filteredText =
+        message.role == "assistant"
+          ? getMessageTextContentWithoutThinkingFromContent(part.text)
+          : part.text;
+      result.push({ type: part.type, text: filteredText });
     } else {
       result.push({ ...part });
     }
@@ -304,7 +315,7 @@ export function stream(
       async onopen(res) {
         clearTimeout(requestTimeoutId);
         const contentType = res.headers.get("content-type");
-        console.log("[Request] response content type: ", contentType);
+        console.log("[Request] response content type:", contentType);
         responseRes = res;
 
         if (contentType?.startsWith("text/plain")) {

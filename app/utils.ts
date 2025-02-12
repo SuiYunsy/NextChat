@@ -22,6 +22,7 @@ export function trimTopic(topic: string) {
 }
 
 export async function copyToClipboard(text: string) {
+  text = getMessageTextContentWithoutThinkingFromContent(text);
   try {
     if (window.__TAURI__) {
       window.__TAURI__.writeText(text);
@@ -239,6 +240,24 @@ export function getMessageTextContent(message: RequestMessage) {
     }
   }
   return "";
+}
+export function getMessageTextContentWithoutThinking(message: RequestMessage) {
+  let content = "";
+  if (typeof message.content === "string") {
+    content = message.content;
+  } else {
+    for (const c of message.content) {
+      if (c.type === "text") {
+        content = c.text ?? "";
+        break;
+      }
+    }
+  }
+  return getMessageTextContentWithoutThinkingFromContent(content);
+}
+export function getMessageTextContentWithoutThinkingFromContent(content: string) {
+  const pattern = /^<think>[\s\S]*?(<\/think>|$)/; // 匹配以 <think> 开头，至闭合 </think>之间的内容，如果没有闭合，则匹配到结尾
+  return content.replace(pattern, "").trim(); // 直接移除匹配的部分
 }
 
 export function getMessageImages(message: RequestMessage): string[] {
